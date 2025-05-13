@@ -6,7 +6,7 @@ defaultTasks = arrayListOf("build", "publishToMavenLocal")
 
 allprojects {
     group = "com.pg85.otg"
-    version = "1.20-0.0.30"
+    version = "1.21-0.0.50"
     description = "Open Terrain Generator: Generate anything!"
 }
 
