@@ -381,13 +381,13 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
             org.bukkit.World world = worldGenLevel.getMinecraftWorld().getWorld();
             // only call when a populator is present (prevents unnecessary entity conversion)
             if (!world.getPopulators().isEmpty()) {
-                org.bukkit.craftbukkit.v1_19_R1.generator.CraftLimitedRegion limitedRegion = new org.bukkit.craftbukkit.v1_19_R1.generator.CraftLimitedRegion(worldGenLevel, chunk.getPos());
+                org.bukkit.craftbukkit.v1_21_R1.generator.CraftLimitedRegion limitedRegion = new org.bukkit.craftbukkit.v1_21_R1.generator.CraftLimitedRegion(worldGenLevel, chunk.getPos());
                 int x = chunk.getPos().x;
                 int z = chunk.getPos().z;
                 for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
                     WorldgenRandom seededrandom = new WorldgenRandom(new net.minecraft.world.level.levelgen.LegacyRandomSource(worldGenLevel.getSeed()));
                     seededrandom.setDecorationSeed(worldGenLevel.getSeed(), x, z);
-                    populator.populate(world, new org.bukkit.craftbukkit.v1_19_R1.util.RandomSourceWrapper.RandomWrapper(seededrandom), x, z, limitedRegion);
+                    populator.populate(world, new org.bukkit.craftbukkit.v1_21_R1.util.RandomSourceWrapper.RandomWrapper(seededrandom), x, z, limitedRegion);
                 }
                 limitedRegion.saveEntities();
                 limitedRegion.breakLink();

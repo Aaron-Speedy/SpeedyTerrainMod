@@ -11,21 +11,21 @@ repositories {
 
 java {
     // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 dependencies {
     //paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
+    // paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
 
     implementation(project(":common:common-core"))
 
-    compileOnly("com.sk89q.worldedit:worldedit-core:7.2.7") {
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.11") {
         exclude("org.yaml")
     }
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.7")
-    // May need to temporarily shutdown worldedit as not available for 1.19 yet
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11")
 }
 
 tasks {

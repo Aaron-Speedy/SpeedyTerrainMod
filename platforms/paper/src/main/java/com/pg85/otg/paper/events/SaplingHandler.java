@@ -13,7 +13,7 @@ import com.pg85.otg.util.materials.LocalMaterialData;
 import com.pg85.otg.util.materials.LocalMaterials;
 import com.pg85.otg.util.minecraft.SaplingType;
 import net.minecraft.core.BlockPos;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import java.nio.file.Path;

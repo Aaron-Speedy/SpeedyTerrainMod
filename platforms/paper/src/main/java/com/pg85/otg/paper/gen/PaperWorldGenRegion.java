@@ -42,7 +42,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import org.bukkit.craftbukkit.v1_19_R1.util.RandomSourceWrapper;
+import org.bukkit.craftbukkit.v1_21_R1.util.RandomSourceWrapper;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.text.MessageFormat;
