@@ -29,7 +29,7 @@ import net.minecraft.world.level.chunk.ProtoChunk;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import org.bukkit.craftbukkit.v1_21_R1.generator.CraftChunkData;
+import org.bukkit.craftbukkit.generator.CraftChunkData;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

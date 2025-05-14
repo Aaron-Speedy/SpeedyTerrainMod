@@ -1,8 +1,9 @@
 plugins {
     `java-library`
     id("platform-conventions")
-    id("io.papermc.paperweight.userdev") version "1.3.6"
-    id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
+    // id("io.papermc.paperweight.userdev") version "1.3.6"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16"
+    id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
 repositories {
@@ -17,7 +18,9 @@ java {
 dependencies {
     //paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
+    // paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
+    // compileOnly(paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT"))
+    paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
     // paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
 
     implementation(project(":common:common-core"))
