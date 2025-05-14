@@ -382,7 +382,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             org.bukkit.block.Biome biome = org.bukkit.Registry.BIOME.get(location);
             Biome biomeBase = null;
             if (biome != null) {
-                biomeBase = BuiltInRegistries.BIOME.get(new ResourceLocation(biome.getKey().toString()));
+                biomeBase = BuiltinRegistries.BIOME.get(new ResourceLocation(biome.getKey().toString()));
             }
             if (biomeBase != null) {
                 // Merge the vanilla biome's mob spawning lists with the mob spawning lists from the BiomeConfig.
