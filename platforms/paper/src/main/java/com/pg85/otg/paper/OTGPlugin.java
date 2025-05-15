@@ -13,6 +13,7 @@ import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
@@ -70,21 +71,21 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             // Make the frozen boolean accessible
             frozen.setAccessible(true);
             // Set the 'frozen' boolean to false for this registry
-            frozen.set(Registry.BIOME_SOURCE, false);
-            frozen.set(Registry.CHUNK_GENERATOR, false);
+            frozen.set(Registries.BIOME_SOURCE, false);
+            frozen.set(Registries.CHUNK_GENERATOR, false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to unfreeze registry");
             e.printStackTrace();
         }
-        Registry.register(Registry.BIOME_SOURCE, new ResourceLocation(Constants.MOD_ID_SHORT, "default"), OTGBiomeProvider.CODEC);
-        Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(Constants.MOD_ID_SHORT, "default"), OTGNoiseChunkGenerator.CODEC);
+        Registry.register(Registries.BIOME_SOURCE, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGBiomeProvider.CODEC);
+        Registry.register(Registries.CHUNK_GENERATOR, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGNoiseChunkGenerator.CODEC);
 
         // Re-freeze the two registries
         try {
             frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
             frozen.setAccessible(true);
-            frozen.set(Registry.BIOME_SOURCE, true);
-            frozen.set(Registry.CHUNK_GENERATOR, true);
+            frozen.set(Registries.BIOME_SOURCE, true);
+            frozen.set(Registries.CHUNK_GENERATOR, true);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to re-freeze registry");
             e.printStackTrace();
@@ -98,7 +99,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         // Does this go here?
         OTG.getEngine().getPresetLoader().registerBiomes();
 
-        Registry<Biome> biome_registry = ((CraftServer) Bukkit.getServer()).getServer().registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
+        Registry<Biome> biome_registry = ((CraftServer) Bukkit.getServer()).getServer().registryAccess().ownedRegistryOrThrow(Registries.BIOME_REGISTRY);
         int i = 0;
 
         if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.BIOME_REGISTRY)) {
@@ -164,7 +165,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         if (OTGGen.generator == null) {
             RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
             Field frozen;
-            Registry<NoiseGeneratorSettings> noiseGeneratorSettingsReg = registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY);
+            Registry<NoiseGeneratorSettings> noiseGeneratorSettingsReg = registryAccess.registryOrThrow(Registries.NOISE_GENERATOR_SETTINGS_REGISTRY);
             try {
                 frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
                 frozen.setAccessible(true);
@@ -174,9 +175,9 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             }
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
-                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.registryOrThrow(Registry.BIOME_REGISTRY)),
-                    registryAccess.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY),
-                    registryAccess.registryOrThrow(Registry.NOISE_REGISTRY),
+                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.registryOrThrow(Registries.BIOME_REGISTRY)),
+                    registryAccess.registryOrThrow(Registries.STRUCTURE_SET_REGISTRY),
+                    registryAccess.registryOrThrow(Registries.NOISE_REGISTRY),
                     world.getSeed(),
                     NoiseGeneratorSettings.bootstrap(noiseGeneratorSettingsReg)
             );

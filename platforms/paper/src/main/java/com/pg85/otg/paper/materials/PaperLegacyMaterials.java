@@ -7,7 +7,9 @@ import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.minecraft.BlockNames;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.datafix.fixes.ItemStackTheFlatteningFix;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.piston.PistonBaseBlock;
@@ -22,6 +24,12 @@ public class PaperLegacyMaterials {
             return fromLegacyBlockNameOrIdWithData(oldBlockName.split(":")[1], stateId);
         }
         switch (oldBlockName) {
+            // NOTE: GET: The 'get' method for those classes isn't a
+            // thing anymore. I couldn't figure out how this worked,
+            // so I replaced each block by a boring default
+            // one. If it doesn't work, you can revert back
+            // with old commits
+
             // TODO: These minecraft:xxx blocks no longer exist, so cannot be parsed by mc.
             // We should parse them here, but atm we're not falling back to legacy parsing
             // for those blocks. Should make that work, and also handle minecraft:xxx:data.
@@ -138,7 +146,7 @@ public class PaperLegacyMaterials {
             case "magma":
                 return Blocks.MAGMA_BLOCK.defaultBlockState();
             case "tallgrass":
-                return Blocks.GRASS.defaultBlockState();
+                return Blocks.TALL_GRASS.defaultBlockState();
             case "cobble_wall":
                 return Blocks.COBBLESTONE_WALL.defaultBlockState();
             case "iron_fence":
@@ -149,10 +157,9 @@ public class PaperLegacyMaterials {
                 return Blocks.ENCHANTING_TABLE.defaultBlockState();
             case "mob_spawner":
                 return Blocks.INFESTED_STONE.defaultBlockState();
+            // NOTE: See "NOTE: GET" note above
             case "double_step":
-                return Registry.BLOCK.get(new ResourceLocation("minecraft:smooth_stone_slab"))
-                        .defaultBlockState().setValue(SlabBlock.TYPE,
-                                SlabType.DOUBLE);
+                return Blocks.SMOOTH_STONE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
             case "smooth_brick":
                 return Blocks.STONE_BRICKS.defaultBlockState();
             case "rails":
@@ -243,16 +250,17 @@ public class PaperLegacyMaterials {
                     // Legacy blocks with block data that are now their own block
                 case "banner":
                 case "white_banner":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:banner", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" note above
+                    return Blocks.WHITE_BANNER.defaultBlockState();
 
                 // TODO: How does facing for bed blocks in bo's work for 1.12.2, can only specify color via data?
                 case "bed":
-                case "white_bed":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:bed", data)).defaultBlockState();
+                case "white_bed": return Blocks.WHITE_BED.defaultBlockState();
 
                 case "carpet":
                 case "white_carpet":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:carpet", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_CARPET.defaultBlockState();
 
                 case "cobblestone_wall":
                 case "cobble_wall":
@@ -265,55 +273,63 @@ public class PaperLegacyMaterials {
                     }
                 case "concrete":
                 case "white_concrete":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:concrete", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_CONCRETE.defaultBlockState();
 
                 case "concrete_powder":
                 case "white_concrete_powder":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:concrete_powder", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_CONCRETE_POWDER.defaultBlockState();
 
                 case "dirt":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:dirt", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.DIRT.defaultBlockState();
 
                 // TODO: This only spawns the bottom half?
                 case "double_plant":
                 case "sunflower":
                 case "rose_bush":
                 case "tall_grass":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:double_plant", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.TALL_GRASS.defaultBlockState();
 
                 case "double_stone_slab":
                 case "smooth_stone":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stone_slab", data))
-                            .defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.STONE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
 
                 // TODO: Did this even exist for 1.12.2?
                 case "double_wooden_slab":
                 case "wood_double_step":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:wooden_slab", data))
-                            .defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
 
                 case "leaves":
                 case "oak_leaves":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:leaves", data % 4))
-                            .defaultBlockState().setValue(LeavesBlock.DISTANCE, 1);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.OAK_LEAVES.defaultBlockState().setValue(LeavesBlock.DISTANCE, 1);
 
                 case "leaves2":
                 case "leaves_2":
                 case "acacia_leaves":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:leaves2", data % 4)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.ACACIA_LEAVES.defaultBlockState();
 
                 case "monster_egg":
                 case "monster_eggs":
                 case "infested_stone":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:monster_egg", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.DRAGON_EGG.defaultBlockState();
 
                 case "planks":
                 case "wood":
                 case "oak_planks":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:planks", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.OAK_PLANKS.defaultBlockState();
 
                 case "prismarine":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:prismarine", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.PRISMARINE.defaultBlockState();
 
                 case "purpur_slab":
                     return Blocks.PURPUR_SLAB.defaultBlockState()
@@ -326,10 +342,12 @@ public class PaperLegacyMaterials {
 
                 case "red_flower":
                 case "red_rose":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:red_flower", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.POPPY.defaultBlockState();
 
                 case "red_sandstone":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:red_sandstone", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.RED_SANDSTONE.defaultBlockState();
 
                 case "red_sandstone_slab":
                 case "stone_slab2":
@@ -354,11 +372,13 @@ public class PaperLegacyMaterials {
                     }
 
                 case "sandstone":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:sandstone", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.SANDSTONE.defaultBlockState();
 
                 case "sapling":
                 case "oak_sapling":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:sapling", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.OAK_SAPLING.defaultBlockState();
 
                 case "skull":
                 case "skeleton_skull":
@@ -373,55 +393,59 @@ public class PaperLegacyMaterials {
                     }
                 case "stained_glass":
                 case "white_stained_glass":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stained_glass", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_STAINED_GLASS.defaultBlockState();
 
                 case "stained_glass_pane":
                 case "white_stained_glass_pane":
                 case "thin_glass":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stained_glass_pane", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_STAINED_GLASS_PANE.defaultBlockState();
 
                 case "stained_hardened_clay":
                 case "stained_clay":
                 case "white_terracotta":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stained_hardened_clay", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_TERRACOTTA.defaultBlockState();
 
                 case "stone":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stone", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.STONE.defaultBlockState();
 
                 case "stone_slab":
                 case "step":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stone_slab", data % 8))
-                            .defaultBlockState().setValue(SlabBlock.TYPE,
-                                    data >= 8 ? SlabType.TOP : SlabType.BOTTOM);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.STONE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, data >= 8 ? SlabType.TOP : SlabType.BOTTOM);
 
                 case "double_step":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stone_slab", data % 8))
-                            .defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.STONE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.DOUBLE);
 
                 case "stonebrick":
                 case "stone_bricks":
                 case "smooth_brick":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:stonebrick", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.STONE_BRICKS.defaultBlockState();
 
                 case "tallgrass":
                 case "long_grass":
                     switch (data) {
                         case 1:
                         default:
-                            return Blocks.GRASS.defaultBlockState();
+                            return Blocks.TALL_GRASS.defaultBlockState();
                         case 2:
                             return Blocks.FERN.defaultBlockState();
                     }
                 case "wooden_slab":
                 case "wood_step":
                 case "oak_slab":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:wooden_slab", data % 8))
-                            .defaultBlockState().setValue(SlabBlock.TYPE,
-                                    data >= 8 ? SlabType.TOP : SlabType.BOTTOM);
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, data >= 8 ? SlabType.TOP : SlabType.BOTTOM);
 
                 case "wool":
                 case "white_wool":
-                    return Registry.BLOCK.get(getFlatKey("minecraft:wool", data)).defaultBlockState();
+                    // NOTE: See "NOTE: GET" above.
+                    return Blocks.WHITE_WOOL.defaultBlockState();
 
 
                 // Blocks with data

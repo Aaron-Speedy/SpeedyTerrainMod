@@ -15,6 +15,7 @@ import com.pg85.otg.util.minecraft.BlockNames;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -118,7 +119,7 @@ public class PaperMaterialReader implements IMaterialReader {
         BlockState blockdata = null;
         try {
             String newInput = blockNameCorrected.contains(":") ? blockNameCorrected : "minecraft:" + blockNameCorrected;
-            blockdata = BlockStateParser.parseForBlock(Registry.BLOCK, new StringReader(newInput), true).blockState();
+            blockdata = BlockStateParser.parseForBlock(Registries.BLOCK, new StringReader(newInput), true).blockState();
         } catch (CommandSyntaxException ignored) {
         }
         if (blockdata != null) {
@@ -156,7 +157,7 @@ public class PaperMaterialReader implements IMaterialReader {
 
         try {
             // This returns AIR if block is not found ><. ----Does it for spigot too?
-            block = Registry.BLOCK.get(new ResourceLocation(blockNameCorrected));
+            block = Registries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(blockNameCorrected));
             if (block != Blocks.AIR || blockNameCorrected.toLowerCase().endsWith("air")) {
                 // For leaves, add DISTANCE 1 to make them not decay.
                 if (block instanceof LeavesBlock) {
