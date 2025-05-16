@@ -16,6 +16,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
@@ -109,7 +110,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.BIOME_REGISTRY)) {
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "-----------------");
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "Registered biomes:");
-            for (var biomeBase : biome_registry) {
+            for (var biomeBase : biomeRegistry) {
                 OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, (i++) + ": " + biomeBase.toString());
             }
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "-----------------");
@@ -167,9 +168,8 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         // The lock is used to avoid the accidental creation of two separate objects, in case
         // of a race condition.
         if (OTGGen.generator == null) {
-            RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
             Field frozen;
-            Registry<NoiseGeneratorSettings> noiseGeneratorSettingsReg = registryAccess.registryOrThrow(Registries.NOISE_GENERATOR_SETTINGS_REGISTRY);
+            Registry<NoiseGeneratorSettings> noiseGeneratorSettingsReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
             try {
                 frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
                 frozen.setAccessible(true);
@@ -179,11 +179,13 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             }
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
-                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.registryOrThrow(Registries.BIOME_REGISTRY)),
-                    registryAccess.registryOrThrow(Registries.STRUCTURE_SET_REGISTRY),
-                    registryAccess.registryOrThrow(Registries.NOISE_REGISTRY),
+                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.lookupOrThrow(Registries.BIOME)),
+                    registryAccess.lookupOrThrow(Registries.STRUCTURE_SET_REGISTRY),
+                    registryAccess.lookupOrThrow(Registries.NOISE_REGISTRY),
                     world.getSeed(),
-                    NoiseGeneratorSettings.bootstrap(noiseGeneratorSettingsReg)
+                    // TODO: Does this go around the freezing?
+                    new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
+                    // NoiseGeneratorSettings.bootstrap(noiseGeneratorSettingsReg)
             );
             // add the weird Spigot config; it was complaining about this
             OTGDelegate.conf = serverWorld.spigotConfig;
