@@ -180,8 +180,8 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
                     new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.lookupOrThrow(Registries.BIOME)),
-                    registryAccess.lookupOrThrow(Registries.STRUCTURE_SET_REGISTRY),
-                    registryAccess.lookupOrThrow(Registries.NOISE_REGISTRY),
+                    registryAccess.lookupOrThrow(Registries.STRUCTURE_SET),
+                    registryAccess.lookupOrThrow(Registries.NOISE),
                     world.getSeed(),
                     // TODO: Does this go around the freezing?
                     new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)

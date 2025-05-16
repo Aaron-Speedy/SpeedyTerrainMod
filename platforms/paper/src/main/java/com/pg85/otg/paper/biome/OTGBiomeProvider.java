@@ -17,6 +17,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Biomes;
@@ -33,7 +34,7 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
                     Codec.LONG.fieldOf("seed").stable().forGetter((provider) -> provider.seed),
                     Codec.BOOL.optionalFieldOf("legacy_biome_init_layer", Boolean.FALSE, Lifecycle.stable()).forGetter((provider) -> provider.legacyBiomeInitLayer),
                     Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter((provider) -> provider.largeBiomes),
-                    RegistryOps.retrieveRegistry(Registry.BIOME_REGISTRY).forGetter((provider) -> provider.registry)
+                    RegistryOps.retrieveRegistry(Registries.BIOME).forGetter((provider) -> provider.registry)
             ).apply(instance, instance.stable(OTGBiomeProvider::new))
     );
     private final long seed;
@@ -65,7 +66,7 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
         for (int biomeId = 0; biomeId < biomeLookup.length; biomeId++) {
             IBiomeConfig config = biomeLookup[biomeId].getBiomeConfig();
 
-            ResourceKey<Biome> key = ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(config.getRegistryKey().toResourceLocationString()));
+            ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, new ResourceLocation(config.getRegistryKey().toResourceLocationString()));
             this.keyLookup.put(biomeId, key);
         }
     }

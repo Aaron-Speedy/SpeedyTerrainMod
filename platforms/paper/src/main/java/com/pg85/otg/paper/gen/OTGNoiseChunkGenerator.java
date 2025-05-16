@@ -27,7 +27,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.*;
+import net.minecraft.core.*; // TODO: This doesn't include everything?
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
@@ -63,8 +64,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
                     .group(
                             Codec.STRING.fieldOf("preset_folder_name").forGetter(p -> p.presetFolderName),
                             BiomeSource.CODEC.fieldOf("biome_source").forGetter(p -> p.biomeSource),
-                            RegistryOps.retrieveRegistry(Registry.STRUCTURE_SET_REGISTRY).forGetter(p -> p.structureSets),
-                            RegistryOps.retrieveRegistry(Registry.NOISE_REGISTRY).forGetter(p -> p.noises),
+                            RegistryOps.retrieveRegistry(Registries.STRUCTURE_SET).forGetter(p -> p.structureSets),
+                            RegistryOps.retrieveRegistry(Registries.NOISE).forGetter(p -> p.noises),
                             Codec.LONG.fieldOf("seed").stable().forGetter(p -> p.worldSeed),
                             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter(p -> p.generatorSettings)
                     ).apply(
