@@ -423,7 +423,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 			/*int length = list.size();
 
 			try {
-				Registry<PlacedFeature> placedRegistry = worldGenRegion.registryAccess().registryOrThrow(Registry.PLACED_FEATURE_REGISTRY);
+				Registry<PlacedFeature> placedRegistry = worldGenRegion.registryAccess().lookupOrThrow(Registry.PLACED_FEATURE_REGISTRY);
 				int steps = Math.max(GenerationStep.Decoration.values().length, length);
 
 				for(int step = 0; step < steps; ++step)

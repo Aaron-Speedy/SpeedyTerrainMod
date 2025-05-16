@@ -93,7 +93,7 @@ public class ShadowChunkGenerator {
         // Make a dummy chunk, we'll fill this with base terrain data ourselves, without touching any MC worldgen logic.
         // As an optimisation, we cache the dummy chunk in a limited size FIFO cache. Later when MC requests the chunk
         // during world generation, we swap the dummy chunk's data into the real chunk.
-        ProtoChunk chunk = new ProtoChunk(new ChunkPos(chunkCoordinate.getChunkX(), chunkCoordinate.getChunkZ()), null, level, level.registryAccess().registryOrThrow(Registries.BIOME), null);
+        ProtoChunk chunk = new ProtoChunk(new ChunkPos(chunkCoordinate.getChunkX(), chunkCoordinate.getChunkZ()), null, level, level.registryAccess().lookupOrThrow(Registries.BIOME), null);
         PaperChunkBuffer buffer = new PaperChunkBuffer(chunk);
 
         // This is where vanilla processes any noise affecting structures like villages, in order to spawn smoothing areas.
@@ -235,13 +235,13 @@ public class ShadowChunkGenerator {
             Set<Biome> biomesInArea = new HashSet<>();
 
             for (ChunkCoordinate chunkToHandle : chunksToHandle) {
-                chunk = new ProtoChunk(new ChunkPos(chunkToHandle.getChunkX(), chunkToHandle.getChunkZ()), null, serverWorld, serverWorld.registryAccess().registryOrThrow(Registries.BIOME), null);
+                chunk = new ProtoChunk(new ChunkPos(chunkToHandle.getChunkX(), chunkToHandle.getChunkZ()), null, serverWorld, serverWorld.registryAccess().lookupOrThrow(Registries.BIOME), null);
                 chunkpos = chunk.getPos();
                 biomesInArea.add(((PaperBiome) cachedBiomeProvider.getNoiseBiome((chunkpos.x << 2) + 2, (chunkpos.z << 2) + 2)).getBiome());
             }
 
             for (ChunkCoordinate chunkToHandle : chunksToHandle) {
-                chunk = new ProtoChunk(new ChunkPos(chunkToHandle.getChunkX(), chunkToHandle.getChunkZ()), null, serverWorld, serverWorld.registryAccess().registryOrThrow(Registries.BIOME), null);
+                chunk = new ProtoChunk(new ChunkPos(chunkToHandle.getChunkX(), chunkToHandle.getChunkZ()), null, serverWorld, serverWorld.registryAccess().lookupOrThrow(Registries.BIOME), null);
                 chunkpos = chunk.getPos();
                 int distance = (int) Math.floor(Math.sqrt(Math.pow(chunkToHandle.getChunkX() - chunkCoordinate.getChunkX(), 2) + Math.pow(chunkToHandle.getChunkZ() - chunkCoordinate.getChunkZ(), 2)));
 
