@@ -33,7 +33,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
-import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.*;
@@ -529,7 +529,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
     // Mob spawning on chunk tick
     @Override
-    public WeightedRandomList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory entityClassification, BlockPos blockPos) {
+    public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory entityClassification, BlockPos blockPos) {
 		/*if (structureManager.getStructureAt(blockPos, StructureFeature.SWAMP_HUT).isValid())
 		{
 			if (entityClassification == MobCategory.MONSTER)
