@@ -42,6 +42,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
     private static final ReentrantLock initLock = new ReentrantLock();
     private static final HashMap<String, String> worlds = new HashMap<>();
     private static final HashSet<String> processedWorlds = new HashSet<>();
+    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
 
     @SuppressWarnings("unused")
     private OTGHandler handler;
@@ -78,8 +79,9 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to unfreeze registry");
             e.printStackTrace();
         }
-        Registry.register(BuiltInRegistries.BIOME_SOURCE, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGBiomeProvider.CODEC);
-        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGNoiseChunkGenerator.CODEC);
+        // :barf:
+        Registry.register(registryAccess.lookupOrThrow(Registries.BIOME_SOURCE), ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGBiomeProvider.CODEC);
+        Registry.register(registryAccess.lookupOrThrow(Registries.CHUNK_GENERATOR), ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGNoiseChunkGenerator.CODEC);
 
         // Re-freeze the two registries
         try {
@@ -100,13 +102,14 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         // Does this go here?
         OTG.getEngine().getPresetLoader().registerBiomes();
 
-        Registry<Biome> biome_registry = ((CraftServer) Bukkit.getServer()).getServer().registryAccess().ownedRegistryOrThrow(Registries.BIOME_REGISTRY);
+        // TODO: Factor this out into a class field?
+        var biomeRegistry = registryAccess.lookupOrThrow(Registries.BIOME_SOURCE);
         int i = 0;
 
         if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.BIOME_REGISTRY)) {
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "-----------------");
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "Registered biomes:");
-            for (Biome biomeBase : biome_registry) {
+            for (var biomeBase : biome_registry) {
                 OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, (i++) + ": " + biomeBase.toString());
             }
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "-----------------");
