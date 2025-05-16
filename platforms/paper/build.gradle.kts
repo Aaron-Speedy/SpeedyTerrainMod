@@ -45,6 +45,5 @@ tasks {
 
 otgPlatform {
     // I'm not sure if this is the proper way output without reobfuscating.
-    val normalJar = tasks.named<Jar>("jar")
-    productionJar.set(normalJar.flatMap { it.archiveFile })
+    productionJar.set(tasks.named<Jar>("jar").flatMap { it.archiveFile })
 }

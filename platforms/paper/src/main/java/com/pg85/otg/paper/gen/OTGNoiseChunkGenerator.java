@@ -325,43 +325,44 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
     // Carvers: Caves and ravines
 
-    @Override
-    public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk, GenerationStep.Carving stage) {
-        if (stage == GenerationStep.Carving.AIR) {
-            ProtoChunk protoChunk = (ProtoChunk) chunk;
-            ChunkBuffer chunkBuffer = new PaperChunkBuffer(protoChunk);
-            /*
-             * The following code exists as Minecraft 1.18 has a new "carvingMask"
-             * class that they use instead of BitSet
-             * However, that class is really just a wrapper that makes it harder
-             * to access the BitSet inside.
-             * We simply use reflections to access the BitSet
-             * Which enables us to send it up into common code.
-             *
-             * - Frank
-             */
-            CarvingMask carvingMaskRaw = protoChunk.getOrCreateCarvingMask(stage);
-            try {
-                Field theRealMask = ObfuscationHelper.getField(CarvingMask.class, "mask", "b");
-                theRealMask.setAccessible(true);
-                BitSet carvingMask = (BitSet) theRealMask.get(carvingMaskRaw);
+    // NOTE: Commenting this out temporarily
+    // @Override
+    // public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk, GenerationStep.Carving stage) {
+    //     if (stage == GenerationStep.Carving.AIR) {
+    //         ProtoChunk protoChunk = (ProtoChunk) chunk;
+    //         ChunkBuffer chunkBuffer = new PaperChunkBuffer(protoChunk);
+    //         /*
+    //          * The following code exists as Minecraft 1.18 has a new "carvingMask"
+    //          * class that they use instead of BitSet
+    //          * However, that class is really just a wrapper that makes it harder
+    //          * to access the BitSet inside.
+    //          * We simply use reflections to access the BitSet
+    //          * Which enables us to send it up into common code.
+    //          *
+    //          * - Frank
+    //          */
+    //         CarvingMask carvingMaskRaw = protoChunk.getOrCreateCarvingMask(stage);
+    //         try {
+    //             Field theRealMask = ObfuscationHelper.getField(CarvingMask.class, "mask", "b");
+    //             theRealMask.setAccessible(true);
+    //             BitSet carvingMask = (BitSet) theRealMask.get(carvingMaskRaw);
 
-                // TODO: Carvers need updating to use sub-0 height, and also to potentially use the new Carving Mask -auth
-                // Leaving this commented out until at least the sub-0 is implemented.
-                // this.internalGenerator.carve(chunkBuffer, seed, protoChunk.getPos().x, protoChunk.getPos().z, carvingMask, true, true); //TODO: Don't use hardcoded true
-            } catch (NoSuchFieldException e) {
-                if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
-                    OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
-                }
-            } catch (IllegalAccessException e) {
-                if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
-                    OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
-                }
-            }
-        }
-        // Commenting out as abstract implies it is no longer needed.
-        //super.applyCarvers(chunkRegion, seed, biomeManager, structureAccess, chunk, stage);
-    }
+    //             // TODO: Carvers need updating to use sub-0 height, and also to potentially use the new Carving Mask -auth
+    //             // Leaving this commented out until at least the sub-0 is implemented.
+    //             // this.internalGenerator.carve(chunkBuffer, seed, protoChunk.getPos().x, protoChunk.getPos().z, carvingMask, true, true); //TODO: Don't use hardcoded true
+    //         } catch (NoSuchFieldException e) {
+    //             if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
+    //                 OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
+    //             }
+    //         } catch (IllegalAccessException e) {
+    //             if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
+    //                 OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
+    //             }
+    //         }
+    //     }
+    //     // Commenting out as abstract implies it is no longer needed.
+    //     // super.applyCarvers(chunkRegion, seed, biomeManager, structureAccess, chunk, stage);
+    // }
 
     // Population / decoration
 
