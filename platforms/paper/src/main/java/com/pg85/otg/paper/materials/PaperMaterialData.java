@@ -10,8 +10,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -196,23 +196,24 @@ public final class PaperMaterialData extends LocalMaterialData {
             // Loop through the blocks properties
             for (Property<?> property : properties) {
                 // Anything with a direction
-                if (property instanceof DirectionProperty) {
+                if (property instanceof EnumProperty<?> enumProp && enumProp.getValueClass() == Direction.class) {
+                    EnumProperty<Direction> dirProp = (EnumProperty<Direction>) enumProp;
                     Direction direction = (Direction) state.getValue(property);
                     switch (direction) {
                         case DOWN:
                         case UP:
                             break;
                         case NORTH:
-                            state = state.setValue((DirectionProperty) property, Direction.WEST);
+                            state = state.setValue(dirProp, Direction.WEST);
                             break;
                         case SOUTH:
-                            state = state.setValue((DirectionProperty) property, Direction.EAST);
+                            state = state.setValue(dirProp, Direction.EAST);
                             break;
                         case WEST:
-                            state = state.setValue((DirectionProperty) property, Direction.SOUTH);
+                            state = state.setValue(dirProp, Direction.SOUTH);
                             break;
                         case EAST:
-                            state = state.setValue((DirectionProperty) property, Direction.NORTH);
+                            state = state.setValue(dirProp, Direction.NORTH);
                             break;
                     }
                 }
