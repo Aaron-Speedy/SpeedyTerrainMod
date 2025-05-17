@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
 
@@ -109,22 +108,18 @@ public final class PaperMaterialData extends LocalMaterialData {
 
     @Override
     public boolean isLiquid() {
-        return
-                this.blockData != null &&
-                        (
-                                this.blockData.getMaterial() == Material.WATER ||
-                                        this.blockData.getMaterial() == Material.LAVA
-                        );
+        return this.blockData != null && this.blockData.liquid();
     }
 
     @Override
     public boolean isSolid() {
-        return this.blockData != null && this.blockData.getMaterial().isSolid() && this.blockData.getMaterial().isSolidBlocking();
+        // TODO: Does !propagatesSkylightDown need to be getOpacity() == 0?
+        return this.blockData != null && this.blockData.isSolid() && !this.blockData.propagatesSkylightDown();
     }
 
     @Override
     public boolean isEmptyOrAir() {
-        return this.blockData == null || this.blockData.getMaterial() == Material.AIR;
+        return this.blockData == null || this.blockData.isAir();
     }
 
     @Override
@@ -134,7 +129,7 @@ public final class PaperMaterialData extends LocalMaterialData {
 
     @Override
     public boolean isAir() {
-        return this.blockData != null && this.blockData.getMaterial() == Material.AIR;
+        return this.blockData != null && this.blockData.isAir();
     }
 
     @Override
@@ -162,7 +157,8 @@ public final class PaperMaterialData extends LocalMaterialData {
             ) {
                 // TODO: Vanilla checks faceFull here, we don't since it requires coords.
                 //return Block.isFaceFull(this.blockData.getCollisionShape(blockPos, blockPos.below()), Direction.UP) || (this.blockData.is(Blocks.SNOW) && this.blockData.getValue(LAYERS) == 8);
-                return this.blockData.getMaterial().isSolid() || (this.blockData.is(Blocks.SNOW) && this.blockData.getValue(SnowLayerBlock.LAYERS) == 8);
+                // TODO: Do we need to update this?
+                return this.blockData.isSolid() || (this.blockData.getBlock() == Blocks.SNOW && this.blockData.getValue(SnowLayerBlock.LAYERS) == 8);
             } else {
                 return true;
             }
