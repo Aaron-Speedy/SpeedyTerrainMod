@@ -28,7 +28,7 @@ public class PaperLegacyMaterials {
             // thing anymore. I couldn't figure out how this worked,
             // so I replaced each block by a boring default
             // one. If it doesn't work, you can revert back
-            // with old commits
+            // with old commits.
 
             // TODO: These minecraft:xxx blocks no longer exist, so cannot be parsed by mc.
             // We should parse them here, but atm we're not falling back to legacy parsing
