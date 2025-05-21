@@ -44,7 +44,7 @@ public class PaperNBTHelper extends LocalNBTHelper {
         NamedBinaryTag compoundTag = new NamedBinaryTag(NamedBinaryTag.Type.TAG_Compound, name,
                 new NamedBinaryTag[]{new NamedBinaryTag(NamedBinaryTag.Type.TAG_End, null, null)});
 
-        Set<String> keys = nmsTag.getAllKeys();
+        Set<String> keys = nmsTag.keySet();
 
         // Add all child tags to the compound tag
         for (String key : keys) {
@@ -52,7 +52,7 @@ public class PaperNBTHelper extends LocalNBTHelper {
 
             if (nmsChildTag == null) {
                 if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
-                    OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.CUSTOM_OBJECTS, "Failed to read NBT property " + key + " from tag " + nmsTag.getAsString());
+                    OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.CUSTOM_OBJECTS, "Failed to read NBT property " + key + " from tag " + nmsTag.asString());
                 }
                 continue;
             }
@@ -159,7 +159,7 @@ public class PaperNBTHelper extends LocalNBTHelper {
             case TAG_Float -> ((FloatTag) nmsTag).floatValue(); // TODO: Above
             case TAG_Double -> ((DoubleTag) nmsTag).doubleValue(); // TODO: Above
             case TAG_Byte_Array -> ((ByteArrayTag) nmsTag).getAsByteArray();
-            case TAG_String -> nmsTag.getAsString();
+            case TAG_String -> nmsTag.asString();
             case TAG_Int_Array -> ((IntArrayTag) nmsTag).getAsIntArray();
             default ->
                 // Cannot read this from a tag

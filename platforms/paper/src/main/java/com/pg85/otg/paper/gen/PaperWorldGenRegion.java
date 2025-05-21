@@ -164,7 +164,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         }
 
         // Tried to query an unloaded chunk outside the area being decorated
-        if (chunk == null || !chunk.getStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
+        if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
             return null;
         }
 
@@ -228,7 +228,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         }
 
         // Tried to query an unloaded chunk outside the area being decorated
-        if (chunk == null || !chunk.getStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
+        if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
             return -1;
         }
 
@@ -320,7 +320,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         // TODO: Make a getLight method based on world.getLight that uses unloaded chunks.
         ChunkCoordinate chunkCoord = ChunkCoordinate.fromBlockCoords(x, z);
         ChunkAccess chunk = this.worldGenRegion.getChunk(chunkCoord.getChunkX(), chunkCoord.getChunkZ(), ChunkStatus.EMPTY, false);
-        if (chunk != null && chunk.getStatus().isOrAfter(ChunkStatus.LIGHT)) {
+        if (chunk != null && chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIGHT)) {
             // This fetches the block and skylight as if it were day.
             return this.worldGenRegion.getLightEmission(new BlockPos(x, y, z));
         }
