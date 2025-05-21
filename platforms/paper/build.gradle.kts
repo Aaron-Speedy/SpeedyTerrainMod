@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     id("platform-conventions")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
     id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
@@ -27,7 +27,7 @@ dependencies {
     compileOnly("com.sk89q.worldedit:worldedit-core:7.3.11") {
         exclude("org.yaml")
     }
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11")
+    // compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11")
 }
 
 tasks {
