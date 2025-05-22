@@ -376,7 +376,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         ChunkPos chunkpos = chunk.getPos();
         if (!SharedConstants.debugVoidTerrain(chunkpos)) {
             WorldGenRegion worldGenRegion = ((WorldGenRegion) worldGenLevel);
-            SectionPos sectionpos = SectionPos.of(chunkpos, worldGenRegion.getMinSection());
+            SectionPos sectionpos = SectionPos.of(chunkpos, worldGenRegion.getMinSectionY());
             BlockPos blockpos = sectionpos.origin();
             // NOTE: Whole section removed, updated with vanilla code changes, comment beneath section shows this.
             // Comment beneath written by authvin on March 15th, 2022, so we can assume not much has changed since.
@@ -510,8 +510,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         int i = chunkpos.getMinBlockX();
         int j = chunkpos.getMinBlockZ();
         LevelHeightAccessor levelheightaccessor = p_187718_.getHeightAccessorForGeneration();
-        int k = levelheightaccessor.getMinBuildHeight() + 1;
-        int l = levelheightaccessor.getMaxBuildHeight() - 1;
+        int k = levelheightaccessor.getMinY() + 1;
+        int l = levelheightaccessor.getMaxY() - 1;
         return new BoundingBox(i, k, j, i + 15, l, j + 15);
     }
 
@@ -578,12 +578,12 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
     public int getBaseHeight(int x, int z, Heightmap.Types heightmap, LevelHeightAccessor world) {
         NoiseSettings noiseSettings = this.generatorSettings.value().noiseSettings();
-        int minGenY = Math.max(noiseSettings.minY(), world.getMinBuildHeight());
-        int maxGenY = Math.min(noiseSettings.minY() + noiseSettings.height(), world.getMaxBuildHeight());
+        int minGenY = Math.max(noiseSettings.minY(), world.getMinY());
+        int maxGenY = Math.min(noiseSettings.minY() + noiseSettings.height(), world.getMaxY());
         int cellNoiseMinY = Math.floorDiv(minGenY, noiseSettings.getCellHeight());
         int noiseCellCount = Math.floorDiv(maxGenY - minGenY, noiseSettings.getCellHeight());
         return noiseCellCount <= 0 ?
-                world.getMinBuildHeight() :
+                world.getMinY() :
                 this.sampleHeightmap(x, z, null, heightmap.isOpaque(), cellNoiseMinY, noiseCellCount);
     }
 
@@ -591,8 +591,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     @Override
     public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor world, RandomState noiseConfig) {
         NoiseSettings noiseSettings = this.generatorSettings.value().noiseSettings();
-        int minGenY = Math.max(noiseSettings.minY(), world.getMinBuildHeight());
-        int maxGenY = Math.min(noiseSettings.minY() + noiseSettings.height(), world.getMaxBuildHeight());
+        int minGenY = Math.max(noiseSettings.minY(), world.getMinY());
+        int maxGenY = Math.min(noiseSettings.minY() + noiseSettings.height(), world.getMaxY());
         int cellNoiseMinY = Math.floorDiv(minGenY, noiseSettings.getCellHeight());
         int noiseCellCount = Math.floorDiv(maxGenY - minGenY, noiseSettings.getCellHeight());
         if (noiseCellCount <= 0) {
