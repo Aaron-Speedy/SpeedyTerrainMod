@@ -142,53 +142,53 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         List<Holder<StructureSet>> holderList = new ArrayList<>();
 
         if (worldConfig.getRareBuildingsEnabled()) {
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.IGLOOS));
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.SWAMP_HUTS));
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.DESERT_PYRAMIDS));
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.JUNGLE_TEMPLES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.IGLOOS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.SWAMP_HUTS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.DESERT_PYRAMIDS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.JUNGLE_TEMPLES));
         }
 
         if (worldConfig.getVillagesEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.VILLAGES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.VILLAGES));
 
         if (worldConfig.getPillagerOutpostsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.PILLAGER_OUTPOSTS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.PILLAGER_OUTPOSTS));
 
         if (worldConfig.getStrongholdsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.STRONGHOLDS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.STRONGHOLDS));
 
         if (worldConfig.getOceanMonumentsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.OCEAN_MONUMENTS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.OCEAN_MONUMENTS));
 
         if (worldConfig.getEndCitiesEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.END_CITIES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.END_CITIES));
 
         if (worldConfig.getWoodlandMansionsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.WOODLAND_MANSIONS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.WOODLAND_MANSIONS));
 
         if (worldConfig.getBuriedTreasureEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.BURIED_TREASURES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.BURIED_TREASURES));
 
         if (worldConfig.getMineshaftsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.MINESHAFTS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.MINESHAFTS));
 
         if (worldConfig.getRuinedPortalsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.RUINED_PORTALS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.RUINED_PORTALS));
 
         if (worldConfig.getShipWrecksEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.SHIPWRECKS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.SHIPWRECKS));
 
         if (worldConfig.getOceanRuinsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.OCEAN_RUINS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.OCEAN_RUINS));
 
         if (worldConfig.getBastionRemnantsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.NETHER_COMPLEXES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.NETHER_COMPLEXES));
 
         if (worldConfig.getNetherFortressesEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.NETHER_COMPLEXES));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.NETHER_COMPLEXES));
 
         if (worldConfig.getNetherFossilsEnabled())
-            holderList.add(registry.getHolderOrThrow(BuiltinStructureSets.NETHER_FOSSILS));
+            holderList.add(registry.getOrThrow(BuiltinStructureSets.NETHER_FOSSILS));
 
         HolderSet<StructureSet> holderSet = HolderSet.direct(holderList);
         return holderSet;
