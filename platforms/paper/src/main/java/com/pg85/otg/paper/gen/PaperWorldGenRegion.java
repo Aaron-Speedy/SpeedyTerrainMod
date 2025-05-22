@@ -609,24 +609,25 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
                 entity.setCustomName(customName != null ? io.papermc.paper.adventure.PaperAdventure.asVanilla(customName) : null);
             }
 
-            // TODO: Non-mob entities, aren't those handled via Block(nbt), chests, armor stands etc?
-            if (entity instanceof LivingEntity) {
-                // If the block is a solid block or entity is a fish out of water, cancel
-                LocalMaterialData block = PaperMaterialData.ofBlockData(this.worldGenRegion.getBlockState(new BlockPos(entityData.getX(), entityData.getY(), entityData.getZ())));
-                if (
-                        block.isSolid() ||
-                                (
-                                        ((LivingEntity) entity).getMobType() == MobType.WATER
-                                                && !block.isLiquid()
-                                )
-                ) {
-                    if (this.logger.getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
-                        this.logger.log(LogLevel.ERROR, LogCategory.CUSTOM_OBJECTS, "Could not spawn entity at " + entityData.getX() + " " + entityData.getY() + " " + entityData.getZ() + " for Entity() " + entityData.makeString() + ", a solid block was found or a water mob tried to spawn outside of water.");
-                    }
-                    continue;
-                }
-
+            // This is a replacement for commented out code below.
+            // TODO: Does this work?
+            if (!SpawnPlacements.isSpawnPositionOk(entity.getType(), this.worldGenRegion, entity.blockPosition())) {
+                continue;
             }
+
+            // TODO: Non-mob entities, aren't those handled via Block(nbt), chests, armor stands etc?
+            // if (entity instanceof LivingEntity) {
+            //     // If the block is a solid block or entity is a fish out of water, cancel
+            //     // TODO: Does this only need to check for fish or does it also need to check for other water mobs?
+            //     LocalMaterialData block = PaperMaterialData.ofBlockData(this.worldGenRegion.getBlockState(new BlockPos(entityData.getX(), entityData.getY(), entityData.getZ())));
+            //     if (block.isSolid() || ((entity.getCategory() == MobCategory.WATER_AMBIENT) && !block.isLiquid())) {
+            //         if (this.logger.getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
+            //             this.logger.log(LogLevel.ERROR, LogCategory.CUSTOM_OBJECTS, "Could not spawn entity at " + entityData.getX() + " " + entityData.getY() + " " + entityData.getZ() + " for Entity() " + entityData.makeString() + ", a solid block was found or a water mob tried to spawn outside of water.");
+            //         }
+            //         continue;
+            //     }
+
+            // }
 
             if (entity instanceof Mob mobEntity) {
                 // Make sure Entity() mobs don't de-spawn, regardless of nbt data
