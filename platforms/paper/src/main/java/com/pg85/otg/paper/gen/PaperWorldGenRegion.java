@@ -42,8 +42,13 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.util.RandomSourceWrapper;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.craftbukkit.CraftServer;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.RegistryAccess;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -54,6 +59,8 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     protected final WorldGenLevel worldGenRegion;
     private final OTGNoiseChunkGenerator chunkGenerator;
     private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
+    private static final Registry<PlacedFeature> placedFeatureRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
+    private static final Registry<ConfiguredFeature<?, ?>> configuredFeatureRegistry = registryAccess.lookupOrThrow(Registries.CONFIGURED_FEATURE);
 
     // BO4 plotting may call hasDefaultStructures on chunks outside the area being decorated, in order to plot large structures.
     // It may query the same chunk multiple times, so use a fixed size cache.
@@ -457,72 +464,72 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             ConfiguredFeature<?, ?> other = null;
             switch (type) {
                 case Acacia:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.ACACIA_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.ACACIA_CHECKED);
                     break;
                 case BigTree:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.FANCY_OAK_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.FANCY_OAK_CHECKED);
                     break;
                 case Forest:
                 case Birch:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.BIRCH_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.BIRCH_CHECKED);
                     break;
                 case JungleTree:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.MEGA_JUNGLE_TREE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_JUNGLE_TREE_CHECKED);
                     break;
                 case CocoaTree:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.JUNGLE_TREE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.JUNGLE_TREE_CHECKED);
                     break;
                 case DarkOak:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.DARK_OAK_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.DARK_OAK_CHECKED);
                     break;
                 case GroundBush:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.JUNGLE_BUSH);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.JUNGLE_BUSH);
                     break;
                 case HugeMushroom:
                     if (rand.nextBoolean()) {
-                        other = registryAccess.lookupOrThrow(TreeFeatures.HUGE_BROWN_MUSHROOM);
+                        other = configuredFeatureRegistry.getValue(TreeFeatures.HUGE_BROWN_MUSHROOM);
                     } else {
-                        other = registryAccess.lookupOrThrow(TreeFeatures.HUGE_RED_MUSHROOM);
+                        other = configuredFeatureRegistry.getValue(TreeFeatures.HUGE_RED_MUSHROOM);
                     }
                     break;
                 case HugeRedMushroom:
-                    other = registryAccess.lookupOrThrow(TreeFeatures.HUGE_RED_MUSHROOM);
+                    other = configuredFeatureRegistry.getValue(TreeFeatures.HUGE_RED_MUSHROOM);
                     break;
                 case HugeBrownMushroom:
-                    other = registryAccess.lookupOrThrow(TreeFeatures.HUGE_BROWN_MUSHROOM);
+                    other = configuredFeatureRegistry.getValue(TreeFeatures.HUGE_BROWN_MUSHROOM);
                     break;
                 case SwampTree:
-                    other = registryAccess.lookupOrThrow(TreeFeatures.SWAMP_OAK);
+                    other = configuredFeatureRegistry.getValue(TreeFeatures.SWAMP_OAK);
                     break;
                 case Taiga1:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.PINE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.PINE_CHECKED);
                     break;
                 case Taiga2:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.SPRUCE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.SPRUCE_CHECKED);
                     break;
                 case HugeTaiga1:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.MEGA_PINE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_PINE_CHECKED);
                     break;
                 case HugeTaiga2:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.MEGA_SPRUCE_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_SPRUCE_CHECKED);
                     break;
                 case TallBirch:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.SUPER_BIRCH_BEES_0002);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.SUPER_BIRCH_BEES_0002);
                     break;
                 case Tree:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.OAK_CHECKED);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.OAK_CHECKED);
                     break;
                 case CrimsonFungi:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.CRIMSON_FUNGI);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.CRIMSON_FUNGI);
                     break;
                 case WarpedFungi:
-                    tree = registryAccess.lookupOrThrow(TreePlacements.WARPED_FUNGI);
+                    tree = placedFeatureRegistry.getValue(TreePlacements.WARPED_FUNGI);
                     break;
                 case ChorusPlant:
-                    tree = registryAccess.lookupOrThrow(EndPlacements.CHORUS_PLANT);
+                    tree = placedFeatureRegistry.getValue(EndPlacements.CHORUS_PLANT);
                     break;
                 case Azalea:
-                    other = registryAccess.lookupOrThrow(TreeFeatures.AZALEA_TREE);
+                    other = configuredFeatureRegistry.getValue(TreeFeatures.AZALEA_TREE);
                     break;
                 default:
                     throw new RuntimeException("Failed to handle tree of type " + type);
@@ -649,9 +656,9 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     public void placeFossil(Random rm, int x, int y, int z) {
         RandomSource random = new RandomSourceWrapper(rm);
         if (y >= 0) {
-            registryAccess.lookupOrThrow(CavePlacements.FOSSIL_UPPER).place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, y, z));
+            placedFeatureRegistry.get(CavePlacements.FOSSIL_UPPER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
         } else {
-            registryAccess.lookupOrThrow(CavePlacements.FOSSIL_LOWER).place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, y, z));
+            placedFeatureRegistry.get(CavePlacements.FOSSIL_LOWER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
         }
     }
 
