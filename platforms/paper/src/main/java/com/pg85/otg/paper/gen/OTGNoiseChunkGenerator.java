@@ -1,5 +1,6 @@
 package com.pg85.otg.paper.gen;
 
+import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.pg85.otg.constants.Constants;
@@ -14,14 +15,13 @@ import com.pg85.otg.interfaces.ICachedBiomeProvider;
 import com.pg85.otg.interfaces.ILayerSource;
 import com.pg85.otg.interfaces.IWorldConfig;
 import com.pg85.otg.paper.biome.PaperBiome;
+import com.pg85.otg.paper.gen.carver.OTGCarvingContext;
+import com.pg85.otg.paper.gen.carver.OTGWorldCarver;
 import com.pg85.otg.paper.presets.PaperPresetLoader;
-import com.pg85.otg.paper.util.ObfuscationHelper;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.gen.ChunkBuffer;
 import com.pg85.otg.util.gen.DecorationArea;
 import com.pg85.otg.util.gen.JigsawStructureData;
-import com.pg85.otg.util.logging.LogCategory;
-import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.materials.LocalMaterialData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -34,15 +34,15 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.Mth;
-import net.minecraft.util.random.WeightedList;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.*;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.structure.*;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawJunction;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
@@ -50,12 +50,11 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.storage.LevelResource;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class OTGNoiseChunkGenerator extends ChunkGenerator {
@@ -88,6 +87,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     private final Preset preset;
     private final NoiseRouter router;
     //protected final WorldgenRandom random;
+
+    private final Supplier<Aquifer.FluidPicker> globalFluidPicker;
 
     // TODO: Move this to WorldLoader when ready?
     private CustomStructureCache structureCache;
@@ -135,6 +136,15 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         this.router = settings.noiseRouter();
         this.sampler = new Climate.Sampler(this.router.temperature(), this.router.vegetation(), this.router.continents(), this.router.erosion(), this.router.depth(), this.router.ridges(), generatorSettings.value().spawnTarget());
 
+        this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker(settings));
+    }
+
+    private static Aquifer.FluidPicker createFluidPicker(NoiseGeneratorSettings settings) {
+        Aquifer.FluidStatus fluidStatus = new Aquifer.FluidStatus(-54, Blocks.LAVA.defaultBlockState());
+        int seaLevel = settings.seaLevel();
+        Aquifer.FluidStatus fluidStatus1 = new Aquifer.FluidStatus(seaLevel, settings.defaultFluid());
+        Aquifer.FluidStatus fluidStatus2 = new Aquifer.FluidStatus(DimensionType.MIN_Y * 2, Blocks.AIR.defaultBlockState());
+        return (x, y, z) -> y < Math.min(-54, seaLevel) ? fluidStatus : fluidStatus1;
     }
 
     // Method to remove structures which have been disabled in the world config
@@ -335,43 +345,45 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     // TODO: Re-implement carvers, or find some way to get new (much more complex) vanilla cavegen to do the work for us
 
     // NOTE: Commenting this out temporarily
-    // @Override
-    // public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk, GenerationStep.Carving stage) {
-    //     if (stage == GenerationStep.Carving.AIR) {
-    //         ProtoChunk protoChunk = (ProtoChunk) chunk;
-    //         ChunkBuffer chunkBuffer = new PaperChunkBuffer(protoChunk);
-    //         /*
-    //          * The following code exists as Minecraft 1.18 has a new "carvingMask"
-    //          * class that they use instead of BitSet
-    //          * However, that class is really just a wrapper that makes it harder
-    //          * to access the BitSet inside.
-    //          * We simply use reflections to access the BitSet
-    //          * Which enables us to send it up into common code.
-    //          *
-    //          * - Frank
-    //          */
-    //         CarvingMask carvingMaskRaw = protoChunk.getOrCreateCarvingMask(stage);
-    //         try {
-    //             Field theRealMask = ObfuscationHelper.getField(CarvingMask.class, "mask", "b");
-    //             theRealMask.setAccessible(true);
-    //             BitSet carvingMask = (BitSet) theRealMask.get(carvingMaskRaw);
+    @Override
+    public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk) {
+        BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> super.biomeSource.getNoiseBiome(x, y, z, noiseConfig.sampler()));
+        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
+        int i = 8;
+        ChunkPos pos = chunk.getPos();
+        NoiseChunk noiseChunk = chunk.getOrCreateNoiseChunk((chunkAccess) -> this.createNoiseChunk(chunkAccess, structureAccess, Blender.of(chunkRegion), noiseConfig));
+        Aquifer aquifer = noiseChunk.aquifer();
+        OTGCarvingContext carvingContext = new OTGCarvingContext(this, structureAccess.level.registryAccess(), chunk.getHeightAccessorForGeneration(), noiseChunk, noiseConfig, generatorSettings.value().surfaceRule(), structureAccess.level.getMinecraftWorld());
+        CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask();
 
-    //             // TODO: Carvers need updating to use sub-0 height, and also to potentially use the new Carving Mask -auth
-    //             // Leaving this commented out until at least the sub-0 is implemented.
-    //             // this.internalGenerator.carve(chunkBuffer, seed, protoChunk.getPos().x, protoChunk.getPos().z, carvingMask, true, true); //TODO: Don't use hardcoded true
-    //         } catch (NoSuchFieldException e) {
-    //             if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
-    //                 OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
-    //             }
-    //         } catch (IllegalAccessException e) {
-    //             if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MAIN)) {
-    //                 OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MAIN, "!!! Error obtaining the carving mask! Caves will not generate! Stacktrace:\n" + e.getStackTrace());
-    //             }
-    //         }
-    //     }
-    //     // Commenting out as abstract implies it is no longer needed.
-    //     // super.applyCarvers(chunkRegion, seed, biomeManager, structureAccess, chunk, stage);
-    // }
+        for(int i1 = -8; i1 <= 8; ++i1) {
+            for(int i2 = -8; i2 <= 8; ++i2) {
+                ChunkPos chunkPos = new ChunkPos(pos.x + i1, pos.z + i2);
+                ChunkAccess chunk1 = structureAccess.level.getChunk(chunkPos.x, chunkPos.z);
+                BiomeGenerationSettings biomeGenerationSettings = chunk1.carverBiome(() -> this.getBiomeGenerationSettings(super.biomeSource.getNoiseBiome(QuartPos.fromBlock(chunkPos.getMinBlockX()), 0, QuartPos.fromBlock(chunkPos.getMinBlockZ()), noiseConfig.sampler())));
+                Iterable<Holder<ConfiguredWorldCarver<?>>> carvers = biomeGenerationSettings.getCarvers();
+                int i3 = 0;
+
+                for(Holder<ConfiguredWorldCarver<?>> holder : carvers) {
+                    ConfiguredWorldCarver<?> configuredWorldCarver = (ConfiguredWorldCarver)holder.value();
+                    worldgenRandom.setLargeFeatureSeed(seed + (long)i3, chunkPos.x, chunkPos.z);
+                    if (configuredWorldCarver.isStartChunk(worldgenRandom)) {
+                        Objects.requireNonNull(biomeManager1);
+                        OTGWorldCarver worldCarver = new OTGWorldCarver();
+                        worldCarver.carve(carvingContext, chunk, biomeManager1::getBiome, worldgenRandom, aquifer, chunkPos, carvingMask);
+                    }
+
+                    ++i3;
+                }
+            }
+        }
+     }
+
+    private NoiseChunk createNoiseChunk(ChunkAccess chunk, StructureManager structureManager, Blender blender, RandomState random) {
+        return NoiseChunk.forChunk(
+                chunk, random, Beardifier.forStructuresInChunk(structureManager, chunk.getPos()), this.generatorSettings.value(), this.globalFluidPicker.get(), blender
+        );
+    }
 
     // Population / decoration
 
