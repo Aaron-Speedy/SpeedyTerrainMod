@@ -21,6 +21,7 @@ import com.pg85.otg.util.minecraft.LegacyRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.Registries;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 public class PaperBiome implements IBiome {
     private final Biome biomeBase;
     private final IBiomeConfig biomeConfig;
+    private static final Registry<PlacedFeature> placedRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
 
     public PaperBiome(Biome biomeBase, IBiomeConfig biomeConfig) {
         this.biomeBase = biomeBase;
@@ -84,11 +86,11 @@ public class PaperBiome implements IBiome {
         for (ConfigFunction<IBiomeConfig> res : ((BiomeConfig) biomeConfig).getResourceQueue()) {
             if (res instanceof RegistryResource registryResource) {
                 GenerationStep.Decoration stage = GenerationStep.Decoration.valueOf(registryResource.getDecorationStage());
-                PlacedFeature registry = BuiltInRegistries.PLACED_FEATURE.get(new ResourceLocation(registryResource.getFeatureKey()));
+                PlacedFeature registry = placedRegisry.getValue(new ResourceLocation(registryResource.getFeatureKey()));
                 if (registry == null) {
                     String newResourceLocation = LegacyRegistry.convertLegacyResourceLocation(registryResource.getFeatureKey());
                     if (newResourceLocation != null) {
-                        registry = BuiltInRegistries.PLACED_FEATURE.get(new ResourceLocation(newResourceLocation));
+                        registry = placedRegistry.getValue(new ResourceLocation(newResourceLocation));
                         if (registry == null) {
                             OTG.getEngine().getLogger().log(LogLevel.WARN, LogCategory.BIOME_REGISTRY, "Somehow you broke the universe! Feature: " + newResourceLocation + " is not in the registry");
                         } else {

@@ -80,7 +80,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to unfreeze registry");
             e.printStackTrace();
         }
-        // :barf:
+
         Registry.register(registryAccess.lookupOrThrow(Registries.BIOME_SOURCE), ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGBiomeProvider.CODEC);
         Registry.register(registryAccess.lookupOrThrow(Registries.CHUNK_GENERATOR), ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "default"), OTGNoiseChunkGenerator.CODEC);
 
@@ -98,18 +98,18 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         OTG.startEngine(new PaperEngine(this));
 
         // TODO: Fix when readding commands
-		/*OTGCommandExecutor.registerArguments();
-		OTGCommandExecutor.register(((CraftServer)Bukkit.getServer()).getServer().vanillaCommandDispatcher.getDispatcher());*/
+        /*OTGCommandExecutor.registerArguments();
+        OTGCommandExecutor.register(((CraftServer)Bukkit.getServer()).getServer().vanillaCommandDispatcher.getDispatcher());*/
         // Does this go here?
         OTG.getEngine().getPresetLoader().registerBiomes();
 
         // TODO: Factor this out into a class field?
         var biomeRegistry = registryAccess.lookupOrThrow(Registries.BIOME_SOURCE);
-        int i = 0;
 
         if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.BIOME_REGISTRY)) {
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "-----------------");
             OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, "Registered biomes:");
+            int i = 0;
             for (var biomeBase : biomeRegistry) {
                 OTG.getEngine().getLogger().log(LogLevel.INFO, LogCategory.BIOME_REGISTRY, (i++) + ": " + biomeBase.toString());
             }
@@ -169,11 +169,11 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         // of a race condition.
         if (OTGGen.generator == null) {
             Field frozen;
-            Registry<NoiseGeneratorSettings> noiseGeneratorSettingsReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
+            Registry<NoiseGeneratorSettings> noiseGenSettingsReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
             try {
                 frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
                 frozen.setAccessible(true);
-                frozen.set(noiseGeneratorSettingsReg, false);
+                frozen.set(noiseGenSettingsReg, false);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -185,7 +185,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
                     world.getSeed(),
                     // TODO: Does this go around the freezing?
                     new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
-                    // NoiseGeneratorSettings.bootstrap(noiseGeneratorSettingsReg)
+                    // NoiseGeneratorSettings.bootstrap(noiseGenSettingsReg)
             );
             // add the weird Spigot config; it was complaining about this
             // TODO: There's no conf field
@@ -196,17 +196,16 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         }
 
         try {
-
-            //Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "t");
+            // Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "t");
             Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "u");
             finalGenerator.setAccessible(true);
 
             finalGenerator.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);
 
-			/*Field pcmGen = ObfuscationHelper.getField(ChunkMap.class, "generator", "r");
-			pcmGen.setAccessible(true);
+            /*Field pcmGen = ObfuscationHelper.getField(ChunkMap.class, "generator", "r");
+            pcmGen.setAccessible(true);
 
-			pcmGen.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);*/
+            pcmGen.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);*/
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }

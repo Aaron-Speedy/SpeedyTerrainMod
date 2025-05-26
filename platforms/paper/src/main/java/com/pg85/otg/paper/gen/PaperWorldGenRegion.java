@@ -59,7 +59,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     protected final WorldGenLevel worldGenRegion;
     private final OTGNoiseChunkGenerator chunkGenerator;
     private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
-    private static final Registry<PlacedFeature> placedFeatureRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
+    private static final Registry<PlacedFeature> placedRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
     private static final Registry<ConfiguredFeature<?, ?>> configuredFeatureRegistry = registryAccess.lookupOrThrow(Registries.CONFIGURED_FEATURE);
 
     // BO4 plotting may call hasDefaultStructures on chunks outside the area being decorated, in order to plot large structures.
@@ -464,26 +464,26 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             ConfiguredFeature<?, ?> other = null;
             switch (type) {
                 case Acacia:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.ACACIA_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.ACACIA_CHECKED);
                     break;
                 case BigTree:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.FANCY_OAK_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.FANCY_OAK_CHECKED);
                     break;
                 case Forest:
                 case Birch:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.BIRCH_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.BIRCH_CHECKED);
                     break;
                 case JungleTree:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_JUNGLE_TREE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.MEGA_JUNGLE_TREE_CHECKED);
                     break;
                 case CocoaTree:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.JUNGLE_TREE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.JUNGLE_TREE_CHECKED);
                     break;
                 case DarkOak:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.DARK_OAK_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.DARK_OAK_CHECKED);
                     break;
                 case GroundBush:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.JUNGLE_BUSH);
+                    tree = placedRegistry.getValue(TreePlacements.JUNGLE_BUSH);
                     break;
                 case HugeMushroom:
                     if (rand.nextBoolean()) {
@@ -502,31 +502,31 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
                     other = configuredFeatureRegistry.getValue(TreeFeatures.SWAMP_OAK);
                     break;
                 case Taiga1:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.PINE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.PINE_CHECKED);
                     break;
                 case Taiga2:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.SPRUCE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.SPRUCE_CHECKED);
                     break;
                 case HugeTaiga1:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_PINE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.MEGA_PINE_CHECKED);
                     break;
                 case HugeTaiga2:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.MEGA_SPRUCE_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.MEGA_SPRUCE_CHECKED);
                     break;
                 case TallBirch:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.SUPER_BIRCH_BEES_0002);
+                    tree = placedRegistry.getValue(TreePlacements.SUPER_BIRCH_BEES_0002);
                     break;
                 case Tree:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.OAK_CHECKED);
+                    tree = placedRegistry.getValue(TreePlacements.OAK_CHECKED);
                     break;
                 case CrimsonFungi:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.CRIMSON_FUNGI);
+                    tree = placedRegistry.getValue(TreePlacements.CRIMSON_FUNGI);
                     break;
                 case WarpedFungi:
-                    tree = placedFeatureRegistry.getValue(TreePlacements.WARPED_FUNGI);
+                    tree = placedRegistry.getValue(TreePlacements.WARPED_FUNGI);
                     break;
                 case ChorusPlant:
-                    tree = placedFeatureRegistry.getValue(EndPlacements.CHORUS_PLANT);
+                    tree = placedRegistry.getValue(EndPlacements.CHORUS_PLANT);
                     break;
                 case Azalea:
                     other = configuredFeatureRegistry.getValue(TreeFeatures.AZALEA_TREE);
@@ -656,9 +656,9 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     public void placeFossil(Random rm, int x, int y, int z) {
         RandomSource random = new RandomSourceWrapper(rm);
         if (y >= 0) {
-            placedFeatureRegistry.get(CavePlacements.FOSSIL_UPPER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
+            placedRegistry.get(CavePlacements.FOSSIL_UPPER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
         } else {
-            placedFeatureRegistry.get(CavePlacements.FOSSIL_LOWER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
+            placedRegistry.get(CavePlacements.FOSSIL_LOWER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
         }
     }
 
