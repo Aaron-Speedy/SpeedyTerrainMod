@@ -80,18 +80,6 @@ on <a href="http://www.minecraftforum.net/topic/71565-biomemod/">BiomeTerrainMod
 - Follow the same instructions that you do for Eclipse if you want to build -- do note that IntelliJ has a gradle GUI
   that you can use once you've imported the project. (Should be on the right of the code.)
 
-## Dev Builds
-
-There are dev builds available for
-1.16.5 [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.16.4).
-
-Dev builds for 1.17.1 are available [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.17.1).
-
-Dev builds for 1.18.1 are available [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.18.1).
-
-You will **NOT** get official support for dev builds, and they may break. Please use the mod jars available to you on
-CurseForge and the [OTG Discord](https://discord.gg/vTqe4zr5Hc).
-
 ## Links
 
 * [Wiki](http://openterraingen.wikia.com/wiki/Open_Terrain_Generator_Wiki)
