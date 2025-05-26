@@ -39,7 +39,7 @@ We are always looking for people to contribute/collaborate with. We encourage co
 * <a href="https://github.com/Aaron-Speedy">Aaron Speedy</a>
 * <a href="https://github.com/FrankTCA">Frank from Info Toast</a>
 
-SpeedyTerrainMod is based off <a href="https://github.com/FrankTCA/OpenTopG">FrankTCA's OpenTerrainGenerator fork</a> which is based off OpenTerrainGenerator, developed by Team OTG:
+SpeedyTerrainMod is based off <a href="https://github.com/FrankTCA/OpenTopG">FrankTCA's OpenTerrainGenerator fork</a> which is based off <a href="https://github.com/PG85/OpenTerrainGenerator">OpenTerrainGenerator</a>, developed by Team OTG:
 
 * <a href="https://github.com/PG85">PG85</a>
 * MCPitman
@@ -49,7 +49,7 @@ SpeedyTerrainMod is based off <a href="https://github.com/FrankTCA/OpenTopG">Fra
 * <a href="https://github.com/SXRWahrheit">Wahrheit</a>
 * <a href="https://infotoast.org">Frank from Info Toast</a>
 
-OpenTerrainGenerator is based off TerrainControl, developed by:
+OpenTerrainGenerator is based off <a href="https://github.com/mctcp/TerrainControl">TerrainControl</a>, developed by:
 
 * <a href="https://github.com/rutgerkok">rutgerkok</a>
 * <a href="https://github.com/Wickth">Wickth</a>
