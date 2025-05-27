@@ -23,7 +23,6 @@ import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import java.util.function.Function;
 
 public class OTGWorldCarver {
-    
     public boolean carve(OTGCarvingContext context, ChunkAccess chunk, Function<BlockPos, Holder<Biome>> biomeAccessor, RandomSource random, Aquifer aquifer, ChunkPos chunkPos, CarvingMask carvingMask) {
         CaveCarverConfiguration caveConfig = new CaveCarverConfiguration(
                 0.15F,
