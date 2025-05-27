@@ -7,11 +7,11 @@
 
 <br />
 <div align="center">
-  <a href="https://github.com/PG85/OpenTerrainGenerator">
+  <a href="https://github.com/Aaron-Speedy/SpeedyTerrainMod">
     <img src="logo.png" alt="Logo" width="291" height="100">
   </a>
 
-<h3 align="center">OpenTerrainGenerator by Team OTG</h3>
+<h3 align="center">SpeedyTerrainMod by Aaron Speedy</h3>
 
   <p align="center">
     Minecraft's Leading Data-Driven Worldgen Engine
@@ -27,15 +27,18 @@
   </p>
 </div>
 
-## OpenTerrainGenerator by Team OTG
+## SpeedyTerrainMod by Aaron Speedy
 
-OpenTerrainGenerator for MC 1.16.x is under development, alpha builds are available in the dev-releases channel of the
-OTG Discord.
+SpeedyTerrainMod for MC 1.21.5 is under development, alpha builds are available under Releases.
 
-OTG 1.16.x 0.1.0 will be the first public beta release for 1.16.x, available via CurseForge. Once 0.1.0 is released, the
-1.16.4 branch will be promoted to default/main. See the milestones for open issues/progress.
+## Credits
 
-### Team OTG
+We are always looking for people to contribute/collaborate with. We encourage community contribution because of our Open Source model, and we thank those who develop presets, contribute code, and have worked on this project in the past.
+
+### SpeedyTerrainMod Contributors
+* <a href="https://github.com/Aaron-Speedy">Aaron Speedy</a>
+
+SpeedyTerrainMod is based off <a href="https://github.com/FrankTCA/OpenTopG">FrankTCA's OpenTerrainGenerator fork</a> which is based off <a href="https://github.com/PG85/OpenTerrainGenerator">OpenTerrainGenerator</a>, developed by Team OTG:
 
 * <a href="https://github.com/PG85">PG85</a>
 * MCPitman
@@ -45,10 +48,20 @@ OTG 1.16.x 0.1.0 will be the first public beta release for 1.16.x, available via
 * <a href="https://github.com/SXRWahrheit">Wahrheit</a>
 * <a href="https://infotoast.org">Frank from Info Toast</a>
 
-We're always looking for people to contribute or collaborate with. For OTG 1.16, we've completely cleaned up and
-overhauled the codebase with the aim of making things more modular, so developers and collaborators can implement new
-settings and modes such as terrain generation noise. If you'd like to contribute, collaborate or become part of Team
-OTG, join us on the OTG Discord!
+OpenTerrainGenerator is based off <a href="https://github.com/mctcp/TerrainControl">TerrainControl</a>, developed by:
+
+* <a href="https://github.com/rutgerkok">rutgerkok</a>
+* <a href="https://github.com/Wickth">Wickth</a>
+* <a href="https://github.com/Timethor">Timethor</a>
+* <a href="https://github.com/oloflarsson">oloflarsson</a>
+* <a href="https://github.com/bloodmc">bloodmc</a>
+
+TerrainControl is the successor
+to <a href="http://www.minecraftforum.net/topic/313991-phoenixterrainmod/">PhoenixTerrainMod</a>, which was based
+on <a href="http://www.minecraftforum.net/topic/71565-biomemod/">BiomeTerrainMod</a>.
+
+* Buycruss - BiomeTerrainMod
+* R-T-B - PhoenixTerrainMod
 
 ## Installation / building
 
@@ -66,59 +79,31 @@ OTG, join us on the OTG Discord!
 - Follow the same instructions that you do for Eclipse if you want to build -- do note that IntelliJ has a gradle GUI
   that you can use once you've imported the project. (Should be on the right of the code.)
 
-## Dev Builds
-
-There are dev builds available for
-1.16.5 [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.16.4).
-
-Dev builds for 1.17.1 are available [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.17.1).
-
-Dev builds for 1.18.1 are available [here](https://github.com/PG85/OpenTerrainGenerator/actions?query=branch%3A1.18.1).
-
-You will **NOT** get official support for dev builds, and they may break. Please use the mod jars available to you on
-CurseForge and the [OTG Discord](https://discord.gg/vTqe4zr5Hc).
-
 ## Links
 
-* [CurseForge](https://minecraft.curseforge.com/projects/open-terrain-generator)
 * [Wiki](http://openterraingen.wikia.com/wiki/Open_Terrain_Generator_Wiki)
 * [Discord](https://discord.com/invite/UXzdVTH)
 * [Installation](https://openterraingen.fandom.com/wiki/Installing_OTG) for Spigot and Forge
 
-## Original developers
+[contributors-shield]: https://img.shields.io/github/contributors/Aaron-Speedy/SpeedyTerrainMod.svg?style=for-the-badge
 
-OpenTerrainGenerator is a fork of Terrain Control, which is the successor
-to <a href="http://www.minecraftforum.net/topic/313991-phoenixterrainmod/">PhoenixTerrainMod</a>, which was based
-on <a href="http://www.minecraftforum.net/topic/71565-biomemod/">BiomeTerrainMod</a>.
+[contributors-url]: https://github.com/Aaron-Speedy/SpeedyTerrainMod/graphs/contributors
 
-* Buycruss - BiomeTerrainMod
-* R-T-B - PhoenixTerrainMod
-* <a href="http://dev.bukkit.org/profiles/Khoorn/">Khoorn - TerrainControl</a> (known
-  as <a href="https://github.com/Wickth">Wickth</a> on GitHub)
-* <a href="https://github.com/oloflarsson">Oloflarsson/Cayorion - TerrainControl</a>
-* <a href="https://github.com/Timethor">Timethor - TerrainControl</a>
-* <a href="https://github.com/rutgerkok">Rutgerkok - TerrainControl</a>
-* <a href="https://github.com/bloodmc">BloodMC - TerrainControl</a>
+[forks-shield]: https://img.shields.io/github/forks/Aaron-Speedy/SpeedyTerrainMod.svg?style=for-the-badge
 
-[contributors-shield]: https://img.shields.io/github/contributors/PG85/OpenTerrainGenerator.svg?style=for-the-badge
+[forks-url]: https://github.com/Aaron-Speedy/SpeedyTerrainMod/network/members
 
-[contributors-url]: https://github.com/PG85/OpenTerrainGenerator/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/Aaron-Speedy/SpeedyTerrainMod.svg?style=for-the-badge
 
-[forks-shield]: https://img.shields.io/github/forks/PG85/OpenTerrainGenerator.svg?style=for-the-badge
+[stars-url]: https://github.com/Aaron-Speedy/SpeedyTerrainMod/stargazers
 
-[forks-url]: https://github.com/PG85/OpenTerrainGenerator/network/members
+[issues-shield]: https://img.shields.io/github/issues/Aaron-Speedy/SpeedyTerrainMod.svg?style=for-the-badge
 
-[stars-shield]: https://img.shields.io/github/stars/PG85/OpenTerrainGenerator.svg?style=for-the-badge
+[issues-url]: https://github.com/Aaron-Speedy/SpeedyTerrainMod/issues
 
-[stars-url]: https://github.com/PG85/OpenTerrainGenerator/stargazers
+[license-shield]: https://img.shields.io/github/license/Aaron-Speedy/SpeedyTerrainMod.svg?style=for-the-badge
 
-[issues-shield]: https://img.shields.io/github/issues/PG85/OpenTerrainGenerator.svg?style=for-the-badge
-
-[issues-url]: https://github.com/PG85/OpenTerrainGenerator/issues
-
-[license-shield]: https://img.shields.io/github/license/PG85/OpenTerrainGenerator.svg?style=for-the-badge
-
-[license-url]: https://github.com/PG85/OpenTerrainGenerator/blob/master/LICENSE.txt
+[license-url]: https://github.com/Aaron-Speedy/SpeedyTerrainMod/blob/master/LICENSE.txt
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 
