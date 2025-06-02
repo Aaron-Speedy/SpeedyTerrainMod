@@ -24,15 +24,12 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.Climate;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.CraftServer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
-    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
 
     public final String presetFolderName;
     private final long seed;
@@ -42,9 +39,9 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
     // private final HolderSet<Biome> biomes;
 
     private final ThreadLocal<CachingLayerSampler> layer;
-    private final Int2ObjectMap<ResourceKey<Biome>> keyLookup;
+    // private final Int2ObjectMap<ResourceKey<Biome>> keyLookup;
 
-    public static final Codec<OTGBiomeProvider> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<OTGBiomeProvider> CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
             Codec.STRING.fieldOf("preset_name").stable().forGetter(x -> x.presetFolderName),
             Codec.LONG.fieldOf("seed").stable().forGetter(x -> x.seed),
@@ -57,30 +54,29 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
         ).apply(instance, instance.stable(OTGBiomeProvider::new))
     );
 
-    public OTGBiomeProvider(String presetFolderName, long seed, boolean legacyBiomeInitLayer, boolean largeBiomes, Registry<Biome> registry) {
-        super(getAllBiomesByPreset(presetFolderName, registry));
+    public OTGBiomeProvider(String presetFolderName, long seed, boolean legacyBiomeInitLayer, boolean largeBiomes) {
+        // super(getAllBiomesByPreset(presetFolderName));
         this.presetFolderName = presetFolderName;
         this.seed = seed;
         this.legacyBiomeInitLayer = legacyBiomeInitLayer;
         this.largeBiomes = largeBiomes;
-        this.registry = registry;
         this.layer = ThreadLocal.withInitial(() -> BiomeLayers.create(seed, ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getPresetGenerationData().get(presetFolderName), OTG.getEngine().getLogger()));
-        this.keyLookup = new Int2ObjectOpenHashMap<>();
+        // this.keyLookup = new Int2ObjectOpenHashMap<>();
 
         // Default to let us know if we did anything wrong
-        this.keyLookup.defaultReturnValue(Biomes.OCEAN);
+        // this.keyLookup.defaultReturnValue(Biomes.OCEAN);
 
         IBiome[] biomeLookup = ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getGlobalIdMapping(presetFolderName);
         if (biomeLookup == null) {
             throw new RuntimeException("No OTG preset found with name \"" + presetFolderName + "\". Install the correct preset or update your server.properties.");
         }
 
-        for (int biomeId = 0; biomeId < biomeLookup.length; biomeId++) {
-            IBiomeConfig config = biomeLookup[biomeId].getBiomeConfig();
+        // for (int biomeId = 0; biomeId < biomeLookup.length; biomeId++) {
+            // IBiomeConfig config = biomeLookup[biomeId].getBiomeConfig();
 
-            ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, new ResourceLocation(config.getRegistryKey().toResourceLocationString()));
-            this.keyLookup.put(biomeId, key);
-        }
+            // ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, new ResourceLocation(config.getRegistryKey().toResourceLocationString()));
+            // this.keyLookup.put(biomeId, key);
+        // }
     }
 
     // private static Stream<Holder<Biome>> getAllBiomesByPreset(String presetFolderName) {
@@ -104,7 +100,7 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
     // Could make this use the cache too?
     @Override
     public Holder<Biome> getNoiseBiome(int biomeX, int biomeY, int biomeZ, Climate.Sampler sampler) {
-        return Holder.direct(registry.get(keyLookup.get(this.layer.get().sample(biomeX, biomeZ))));
+        // return Holder.direct(registry.get(keyLookup.get(this.layer.get().sample(biomeX, biomeZ))));
     }
 
     @Override
