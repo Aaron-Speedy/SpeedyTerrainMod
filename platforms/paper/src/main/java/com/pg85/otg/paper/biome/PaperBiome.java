@@ -21,7 +21,7 @@ import com.pg85.otg.util.minecraft.LegacyRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.Registries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -39,6 +39,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
 public class PaperBiome implements IBiome {
     private final Biome biomeBase;
     private final IBiomeConfig biomeConfig;
+    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
     private static final Registry<PlacedFeature> placedRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
 
     public PaperBiome(Biome biomeBase, IBiomeConfig biomeConfig) {
@@ -66,7 +69,10 @@ public class PaperBiome implements IBiome {
     }
 
     public static Biome createOTGBiome(boolean isOceanBiome, IWorldConfig worldConfig, IBiomeConfig biomeConfig, RegistryAccess registryAccess) {
-        BiomeGenerationSettings.Builder biomeGenerationSettingsBuilder = new BiomeGenerationSettings.Builder();
+        BiomeGenerationSettings.Builder biomeGenerationSettingsBuilder = new BiomeGenerationSettings.Builder(
+            registryAccess.lookupOrThrow(Registries.PLACED_FEATURE),
+            registryAccess.lookupOrThrow(Registries.CONFIGURED_CARVER)
+        );
 
         MobSpawnSettings.Builder mobSpawnInfoBuilder = createMobSpawnInfo(biomeConfig);
 
@@ -85,24 +91,30 @@ public class PaperBiome implements IBiome {
 
         for (ConfigFunction<IBiomeConfig> res : ((BiomeConfig) biomeConfig).getResourceQueue()) {
             if (res instanceof RegistryResource registryResource) {
+                String featureKey = registryResource.getFeatureKey();
+                String namespace = featureKey.split(":")[0];
+                String path = featureKey.split(":")[1];
+
                 GenerationStep.Decoration stage = GenerationStep.Decoration.valueOf(registryResource.getDecorationStage());
-                PlacedFeature registry = placedRegisry.getValue(new ResourceLocation(registryResource.getFeatureKey()));
+                PlacedFeature registry = placedRegistry.getValue(ResourceLocation.parse(registryResource.getFeatureKey()));
+
                 if (registry == null) {
-                    String newResourceLocation = LegacyRegistry.convertLegacyResourceLocation(registryResource.getFeatureKey());
+                    String newResourceLocation = LegacyRegistry.convertLegacyResourceLocation(featureKey);
                     if (newResourceLocation != null) {
-                        registry = placedRegistry.getValue(new ResourceLocation(newResourceLocation));
+                        registry = placedRegistry.getValue(ResourceLocation.parse(newResourceLocation));
                         if (registry == null) {
                             OTG.getEngine().getLogger().log(LogLevel.WARN, LogCategory.BIOME_REGISTRY, "Somehow you broke the universe! Feature: " + newResourceLocation + " is not in the registry");
                         } else {
                             biomeGenerationSettingsBuilder.addFeature(stage, Holder.direct(registry));
                         }
                     } else {
-                        OTG.getEngine().getLogger().log(LogLevel.WARN, LogCategory.BIOME_REGISTRY, "Could not find feature " + registryResource.getFeatureKey() + " in the registry, please check spelling");
+                        OTG.getEngine().getLogger().log(LogLevel.WARN, LogCategory.BIOME_REGISTRY, "Could not find feature " + featureKey + " in the registry, please check spelling");
                     }
                 } else {
                     biomeGenerationSettingsBuilder.addFeature(stage, Holder.direct(registry));
                 }
             }
+
             if (res instanceof GlowLichenResource glow) {
                 List<BlockState> list = new ArrayList<>();
                 for (LocalMaterialBase base : glow.canBePlacedOn) {
@@ -118,6 +130,7 @@ public class PaperBiome implements IBiome {
                         list.add(data.internalBlock());
                     }
                 }
+
                 // Requires replacing the Glow Lichen feature, as configred() doesn't exist any more
 				/*GlowLichenConfiguration config = new GlowLichenConfiguration(glow.nearbyAttempts, glow.canPlaceOnFloor, glow.canPlaceOnCeiling, glow.canPlaceOnWall, glow.chanceOfSpreading, list);
 				biomeGenerationSettingsBuilder
@@ -147,16 +160,16 @@ public class PaperBiome implements IBiome {
                 ;
 
 
-        Optional<ParticleType<?>> particleType = Registry.PARTICLE_TYPE.getOptional(new ResourceLocation(biomeConfig.getParticleType()));
+        Optional<ParticleType<?>> particleType = registryAccess.lookupOrThrow(Registries.PARTICLE_TYPE).getOptional(ResourceLocation.parse(biomeConfig.getParticleType()));
         if (particleType.isPresent() && particleType.get() instanceof ParticleOptions) {
             biomeAmbienceBuilder.ambientParticle(new AmbientParticleSettings((ParticleOptions) particleType.get(), biomeConfig.getParticleProbability()));
         }
 
-        Optional<SoundEvent> music = Registry.SOUND_EVENT.getOptional(new ResourceLocation(biomeConfig.getMusic()));
+        Optional<SoundEvent> music = registryAccess.lookupOrThrow(Registries.SOUND_EVENT).getOptional(ResourceLocation.parse(biomeConfig.getMusic()));
         music.ifPresent(soundEffect ->
                 biomeAmbienceBuilder.backgroundMusic(
                         new Music(
-                                soundEffect,
+                                Holder.direct(soundEffect),
                                 biomeConfig.getMusicMinDelay(),
                                 biomeConfig.getMusicMaxDelay(),
                                 biomeConfig.isReplaceCurrentMusic()
@@ -164,14 +177,14 @@ public class PaperBiome implements IBiome {
                 )
         );
 
-        Optional<SoundEvent> ambientSound = Registry.SOUND_EVENT.getOptional(new ResourceLocation(biomeConfig.getAmbientSound()));
-        ambientSound.ifPresent(soundEffect -> biomeAmbienceBuilder.ambientLoopSound(ambientSound.get()));
+        Optional<SoundEvent> ambientSound = registryAccess.lookupOrThrow(Registries.SOUND_EVENT).getOptional(ResourceLocation.parse(biomeConfig.getAmbientSound()));
+        ambientSound.ifPresent(soundEffect -> biomeAmbienceBuilder.ambientLoopSound(Holder.direct(ambientSound.get())));
 
-        Optional<SoundEvent> moodSound = Registry.SOUND_EVENT.getOptional(new ResourceLocation(biomeConfig.getMoodSound()));
+        Optional<SoundEvent> moodSound = registryAccess.lookupOrThrow(Registries.SOUND_EVENT).getOptional(ResourceLocation.parse(biomeConfig.getMoodSound()));
         moodSound.ifPresent(soundEffect ->
                 biomeAmbienceBuilder.ambientMoodSound(
                         new AmbientMoodSettings(
-                                moodSound.get(),
+                                Holder.direct(moodSound.get()),
                                 biomeConfig.getMoodSoundDelay(),
                                 biomeConfig.getMoodSearchRange(),
                                 biomeConfig.getMoodOffset()
@@ -179,8 +192,8 @@ public class PaperBiome implements IBiome {
                 )
         );
 
-        Optional<SoundEvent> additionsSound = Registry.SOUND_EVENT.getOptional(new ResourceLocation(biomeConfig.getAdditionsSound()));
-        additionsSound.ifPresent(soundEffect -> biomeAmbienceBuilder.ambientAdditionsSound(new AmbientAdditionsSettings(additionsSound.get(), biomeConfig.getAdditionsTickChance())));
+        Optional<SoundEvent> additionsSound = registryAccess.lookupOrThrow(Registries.SOUND_EVENT).getOptional(ResourceLocation.parse(biomeConfig.getAdditionsSound()));
+        additionsSound.ifPresent(soundEffect -> biomeAmbienceBuilder.ambientAdditionsSound(new AmbientAdditionsSettings(Holder.direct(additionsSound.get()), biomeConfig.getAdditionsTickChance())));
 
         if (biomeConfig.getFoliageColor() != 0xffffff) {
             biomeAmbienceBuilder.foliageColorOverride(biomeConfig.getFoliageColor());
@@ -199,9 +212,8 @@ public class PaperBiome implements IBiome {
         }
 
         Biome.BiomeBuilder builder = new Biome.BiomeBuilder()
-                .precipitation(biomeConfig.getBiomeWetness() <= 0.0001 ? Biome.Precipitation.NONE :
-                        biomeConfig.getBiomeTemperature() > Constants.SNOW_AND_ICE_TEMP ? Biome.Precipitation.RAIN :
-                                Biome.Precipitation.SNOW)
+                // As far as I'm aware, there is no longer a way to alter precipitation type directly
+                .hasPrecipitation(biomeConfig.getBiomeWetness() > 0.0001)
                 //.depth(biomeConfig.getBiomeHeight())
                 //.scale(biomeConfig.getBiomeVolatility())
                 .temperature(safeTemperature)
@@ -459,7 +471,8 @@ public class PaperBiome implements IBiome {
 
     // StructureFeatures.register()
     private static Structure register(String name, Structure structure) {
-        return Registry.register(BuiltInRegistries.STRUCTURES, name, structure);
+        // TODO: Is this the right registry?
+        return Registry.register(registryAccess.lookupOrThrow(Registries.STRUCTURE_TYPE), name, structure);
     }
 
     private static MobSpawnSettings.Builder createMobSpawnInfo(IBiomeConfig biomeConfig) {
@@ -481,7 +494,9 @@ public class PaperBiome implements IBiome {
         for (WeightedMobSpawnGroup mobSpawnGroup : mobSpawnGroupList) {
             Optional<EntityType<?>> entityType = EntityType.byString(mobSpawnGroup.getInternalName());
             if (entityType.isPresent()) {
-                mobSpawnInfoBuilder.addSpawn(creatureType, new MobSpawnSettings.SpawnerData(entityType.get(), mobSpawnGroup.getWeight(), mobSpawnGroup.getMin(), mobSpawnGroup.getMax()));
+                // TODO: Verify if arg1 in the SpawnerData constructor is weight
+                // TODO: Look into where getMax went
+                mobSpawnInfoBuilder.addSpawn(creatureType, mobSpawnGroup.getWeight(), new MobSpawnSettings.SpawnerData(entityType.get(), mobSpawnGroup.getWeight(), mobSpawnGroup.getMin()));
             } else {
                 if (OTG.getEngine().getLogger().getLogCategoryEnabled(LogCategory.MOBS)) {
                     OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.MOBS, "Could not find entity for mob: " + mobSpawnGroup.getMob() + " in BiomeConfig " + biomeName);
@@ -492,6 +507,7 @@ public class PaperBiome implements IBiome {
 
     @Override
     public float getTemperatureAt(int x, int y, int z) {
-        return this.biomeBase.getTemperature(new BlockPos(x, y, z));
+        // TODO: This just gets the temperature of the biome. To get the temperature of the block, you have to use Climate.sampler. Do this.
+        return this.biomeBase.getBaseTemperature();
     }
 }
