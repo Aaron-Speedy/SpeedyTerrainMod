@@ -2,9 +2,9 @@ package com.pg85.otg.paper.gen;
 
 import com.pg85.otg.constants.Constants;
 import com.pg85.otg.constants.SettingsEnums;
-import com.pg85.otg.core.OTG;
 import com.pg85.otg.core.gen.OTGChunkDecorator;
 import com.pg85.otg.core.gen.OTGChunkGenerator;
+import com.pg85.otg.core.OTG;
 import com.pg85.otg.core.presets.Preset;
 import com.pg85.otg.customobject.structures.CustomStructureCache;
 import com.pg85.otg.interfaces.IBiome;
@@ -20,6 +20,7 @@ import com.pg85.otg.util.gen.ChunkBuffer;
 import com.pg85.otg.util.gen.DecorationArea;
 import com.pg85.otg.util.gen.JigsawStructureData;
 import com.pg85.otg.util.materials.LocalMaterialData;
+
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
@@ -27,65 +28,93 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Sets;
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import com.mojang.serialization.Codec;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
-import net.minecraft.Util;
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.QuartPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.SharedConstants;
+import net.minecraft.Util;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraft.world.level.NaturalSpawner;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Climate.ParameterPoint;
+import net.minecraft.world.level.biome.Climate.Sampler;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.CarvingMask;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ProtoChunk;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Aquifer;
+import net.minecraft.world.level.levelgen.Beardifier;
+import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.carver.CarvingContext;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
-import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
-import net.minecraft.world.level.levelgen.Aquifer;
-import net.minecraft.world.level.levelgen.RandomState;
-import net.minecraft.world.level.levelgen.NoiseChunk;
+import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
-import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
+import net.minecraft.world.level.levelgen.NoiseChunk;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.NoiseRouter;
+import net.minecraft.world.level.levelgen.NoiseSettings;
+import net.minecraft.world.level.levelgen.OTGDensityFunctions.BeardifierMarker;
+import net.minecraft.world.level.levelgen.OTGDensityFunctions.BeardifierOrMarker;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.RandomSupport;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawJunction;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool.Projection;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
+import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
+import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.NaturalSpawner;
+import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.Supplier;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public class OTGNoiseChunkGenerator extends ChunkGenerator {
     // Create a codec to serialise/deserialise OTGNoiseChunkGenerator
@@ -93,34 +122,32 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         instance -> instance.group(
             Codec.STRING.fieldOf("preset_folder_name").forGetter(x -> x.presetFolderName),
             BiomeSource.CODEC.fieldOf("biome_source").forGetter(x -> x.biomeSource),
-            // RegistryOps.retrieveRegistry(Registries.STRUCTURE_SET).forGetter(x -> x.structureSets),
             // RegistryOps.retrieveRegistry(Registries.NOISE).forGetter(x -> x.noises),
-            // Codec.LONG.fieldOf("seed").stable().forGetter(x -> x.worldSeed),
+            Codec.LONG.fieldOf("seed").stable().forGetter(x -> x.worldSeed),
             NoiseGeneratorSettings.CODEC.fieldOf("settings").forGetter(x -> x.settings)
         ).apply(instance, instance.stable(OTGNoiseChunkGenerator::new))
     );
 
-    // private final Holder<NoiseGeneratorSettings> generatorSettings;
-    // private final long worldSeed;
-    // private final int noiseHeight;
-    // protected final BlockState defaultBlock;
-    // protected final BlockState defaultFluid;
+    private final Holder<NoiseGeneratorSettings> generatorSettings;
+    private final long worldSeed;
+    protected final BlockState defaultBlock;
+    protected final BlockState defaultFluid;
 
-    // private final ShadowChunkGenerator shadowChunkGenerator;
-    // public final OTGChunkGenerator internalGenerator;
-    // private final OTGChunkDecorator chunkDecorator;
-    // private final NoiseRouter router;
-    //protected final WorldgenRandom random;
+    private final ShadowChunkGenerator shadowChunkGenerator;
+    public final OTGChunkGenerator internalGenerator;
+    private final OTGChunkDecorator chunkDecorator;
+    private final NoiseRouter router;
+    protected final WorldgenRandom random;
 
     // private final Supplier<Aquifer.FluidPicker> globalFluidPicker;
 
     // TODO: Move this to WorldLoader when ready?
-    // private CustomStructureCache structureCache;
+    private CustomStructureCache structureCache;
 
     // Used to specify which chunk to regen biomes and structures for
     // Necessary because Spigot calls those methods before we have the chance to inject
-    // private ChunkCoordinate fixBiomesForChunk = null;
-    // private final Climate.Sampler sampler;
+    private ChunkCoordinate fixBiomesForChunk = null;
+    private final Sampler sampler;
     // private final Registry<NormalNoise.NoiseParameters> noises;
 
     private static final BlockState AIR = Blocks.AIR.defaultBlockState();
@@ -130,15 +157,34 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     private final String presetFolderName;
     private final Preset preset;
 
-    public OTGNoiseChunkGenerator(BiomeSource source, Holder<NoiseGeneratorSettings> settings) {
-        this("default", source, settings);
+    // For accessing protected members
+    // Make sure there are no fields added
+
+    private static class OTGNoiseChunkAccess extends NoiseChunk {
+        public OTGNoiseChunkAccess(int horizontalCellCount, RandomState noiseConfig, int startBlockX, int startBlockZ, NoiseSettings generationShapeConfig, DensityFunctions.BeardifierOrMarker beardifying, NoiseGeneratorSettings chunkGeneratorSettings, Aquifer.FluidPicker fluidLevelSampler, Blender blender) {
+            super(horizontalCellCount, noiseConfig, startBlockX, startBlockZ, generationShapeConfig, beardifying, chunkGeneratorSettings, fluidLevelSampler, blender);
+        }
+
+        @Override
+        public Sampler cachedClimateSampler(NoiseRouter router, List<ParameterPoint> spawnTarget) {
+            return super.cachedClimateSampler(router, spawnTarget);
+        }
+
+        @Override
+        public BlockState getInterpolatedState() {
+            return super.getInterpolatedState();
+        }
     }
 
     public ICachedBiomeProvider getCachedBiomeProvider() {
         return this.internalGenerator.getCachedBiomeProvider();
     }
 
-    public OTGNoiseChunkGenerator(String presetFolderName, BiomeSource source, Holder<NoiseGeneratorSettings> settings) {
+    public OTGNoiseChunkGenerator(BiomeSource source, long seed, Holder<NoiseGeneratorSettings> generatorSettings) {
+        this("default", source, seed, generatorSettings);
+    }
+
+    public OTGNoiseChunkGenerator(String presetFolderName, BiomeSource source, long seed, Holder<NoiseGeneratorSettings> generatorSettings) {
         super(source);
 
         this.presetFolderName = presetFolderName;
@@ -146,6 +192,26 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
         this.settings = settings;
         this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker((NoiseGeneratorSettings) settings.value()));
+
+
+        this.presetFolderName = presetFolderName;
+        this.worldSeed = seed;
+        NoiseGeneratorSettings settings = generatorSettings.value();
+        this.generatorSettings = generatorSettings;
+        NoiseSettings noisesettings = settings.noiseSettings();
+        this.defaultBlock = settings.defaultBlock();
+        this.defaultFluid = settings.defaultFluid();
+
+        this.preset = OTG.getEngine().getPresetLoader().getPresetByFolderName(presetFolderName);
+        this.shadowChunkGenerator = new ShadowChunkGenerator();
+        this.internalGenerator = new OTGChunkGenerator(this.preset, seed, (ILayerSource) source, ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getGlobalIdMapping(presetFolderName), OTG.getEngine().getLogger());
+        this.chunkDecorator = new OTGChunkDecorator();
+
+        // Modified for 1.19
+        this.router = settings.noiseRouter();
+        this.sampler = new Sampler(this.router.temperature(), this.router.vegetation(), this.router.continents(), this.router.erosion(), this.router.depth(), this.router.ridges(), generatorSettings.value().spawnTarget());
+
+        this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker(settings));
     }
 
     public void saveStructureCache() {
@@ -231,7 +297,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     }
 
     private void doCreateBiomes(Blender blender, RandomState rand, StructureManager structureManager, ChunkAccess chunkAccess) {
-        NoiseChunk chunk = chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
+        // Who cares about checks? Just make sure OTGNoiseChunkAccess has no new fields.
+        OTGNoiseChunkAccess chunk = (OTGNoiseChunkAccess) chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
         BiomeResolver resolver = BelowZeroRetrogen.getBiomeResolver(blender.getBiomeResolver(this.biomeSource), chunkAccess);
         chunkAccess.fillBiomesFromNoise(resolver, chunk.cachedClimateSampler(rand.router(), ((NoiseGeneratorSettings) this.settings.value()).spawnTarget()));
     }
@@ -304,13 +371,13 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
             int $$19 = $$15 * $$13;
             double $$20 = (double) $$16 / (double) $$13;
             double $$21 = (double) $$17 / (double) $$13;
-            NoiseChunk $$22 = new NoiseChunk(
+            OTGNoiseChunkAccess $$22 = new OTGNoiseChunkAccess(
                 1,
                 noiseConfig,
                 $$18,
                 $$19,
                 settings,
-                DensityFunctions.BeardifierMarker.INSTANCE,
+                BeardifierMarker.INSTANCE,
                 (NoiseGeneratorSettings) this.settings.value(),
                 (Aquifer.FluidPicker) this.globalFluidPicker.get(),
                 Blender.empty()
@@ -494,7 +561,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
                     if (piece instanceof PoolElementStructurePiece villagePiece) {
                         // Add to the list if it's a rigid piece
-                        if (villagePiece.getElement().getProjection() == StructureTemplatePool.Projection.RIGID) {
+                        if (villagePiece.getElement().getProjection() == Projection.RIGID) {
                             structures.add(new JigsawStructureData(box.minX(), box.minY(), box.minZ(), box.maxX(), villagePiece.getGroundLevelDelta(), box.maxZ(), true, 0, 0, 0));
                         }
 
