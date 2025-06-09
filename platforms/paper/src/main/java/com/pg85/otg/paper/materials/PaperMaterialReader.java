@@ -13,6 +13,7 @@ import com.pg85.otg.util.materials.LocalMaterialData;
 import com.pg85.otg.util.materials.LocalMaterialTag;
 import com.pg85.otg.util.minecraft.BlockNames;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -21,12 +22,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 
 public class PaperMaterialReader implements IMaterialReader {
     // TODO: Smaller caches should be ok, only most frequently used should be cached?
     private final FifoMap<String, LocalMaterialData> cachedMaterials = new FifoMap<>(4096);
     private final FifoMap<String, LocalMaterialTag> cachedTags = new FifoMap<>(4096);
-
+    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
+    
     @Override
     public LocalMaterialData readMaterial(String material) throws InvalidConfigException {
         if (material == null) {
@@ -119,7 +123,7 @@ public class PaperMaterialReader implements IMaterialReader {
         BlockState blockdata = null;
         try {
             String newInput = blockNameCorrected.contains(":") ? blockNameCorrected : "minecraft:" + blockNameCorrected;
-            blockdata = BlockStateParser.parseForBlock(Registries.BLOCK, new StringReader(newInput), true).blockState();
+            blockdata = BlockStateParser.parseForBlock(registryAccess.lookupOrThrow(Registries.BLOCK), new StringReader(newInput), true).blockState();
         } catch (CommandSyntaxException ignored) {
         }
         if (blockdata != null) {
@@ -157,7 +161,8 @@ public class PaperMaterialReader implements IMaterialReader {
 
         try {
             // This returns AIR if block is not found ><. ----Does it for spigot too?
-            block = Registries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(blockNameCorrected));
+            // TODO: Verify that the parse method works on blocksNameCorrected
+            block = registryAccess.lookupOrThrow(Registries.BLOCK).getValue(ResourceLocation.parse(blockNameCorrected));
             if (block != Blocks.AIR || blockNameCorrected.toLowerCase().endsWith("air")) {
                 // For leaves, add DISTANCE 1 to make them not decay.
                 if (block instanceof LeavesBlock) {

@@ -656,9 +656,9 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     public void placeFossil(Random rm, int x, int y, int z) {
         RandomSource random = new RandomSourceWrapper(rm);
         if (y >= 0) {
-            placedRegistry.get(CavePlacements.FOSSIL_UPPER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
+            placedRegistry.getValue(CavePlacements.FOSSIL_UPPER).place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, y, z));
         } else {
-            placedRegistry.get(CavePlacements.FOSSIL_LOWER.place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, Valuey, z)));
+            placedRegistry.getValue(CavePlacements.FOSSIL_LOWER).place(this.worldGenRegion, this.chunkGenerator, random, new BlockPos(x, y, z));
         }
     }
 

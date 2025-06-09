@@ -251,7 +251,7 @@ public class ShadowChunkGenerator {
                 // TODO: Optimise this for biome lookups, fetch a whole region of noise biome info at once?
                 IBiome biome = cachedBiomeProvider.getNoiseBiome((chunkpos.x << 2) + 2, (chunkpos.z << 2) + 2);
                 // TODO: Should we store this in the biomes? Would save creating them anew here -auth
-                ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, new ResourceLocation(biome.getBiomeConfig().getRegistryKey().toResourceLocationString()));
+                ResourceKey<Biome> key = ResourceKey.create(Registries.BIOME, ResourceLocation.parse(biome.getBiomeConfig().getRegistryKey().toResourceLocationString()));
                 // TODO: This only checks for villages for now, needs reworking. The forge approach won't work.
                 ArrayList<ResourceKey<StructureSet>> structures = new ArrayList<>();
                 for (ResourceKey<StructureSet> structure : structures) {

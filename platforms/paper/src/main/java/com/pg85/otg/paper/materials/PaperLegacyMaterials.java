@@ -805,7 +805,7 @@ public class PaperLegacyMaterials {
         if (result == null) {
             throw new NullPointerException();
         }
-        return new ResourceLocation(result);
+        return ResourceLocation.parse(result);
     }
 
     private static BlockState getAnvilWithData(int material, int data) {
