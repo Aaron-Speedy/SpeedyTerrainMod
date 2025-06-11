@@ -12,18 +12,18 @@ import com.pg85.otg.paper.util.ObfuscationHelper;
 import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.generator.CustomChunkGenerator;
@@ -32,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.World;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -169,23 +170,24 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         // of a race condition.
         if (OTGGen.generator == null) {
             Field frozen;
-            Registry<NoiseGeneratorSettings> noiseGenSettingsReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
+            Registry<NoiseGeneratorSettings> settingReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
+            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "noise_settings"));
+
             try {
                 frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
                 frozen.setAccessible(true);
-                frozen.set(noiseGenSettingsReg, false);
+                frozen.set(settingReg, false);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
-                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false, registryAccess.lookupOrThrow(Registries.BIOME)),
-                    registryAccess.lookupOrThrow(Registries.STRUCTURE_SET),
-                    registryAccess.lookupOrThrow(Registries.NOISE),
+                    new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false),
                     world.getSeed(),
                     // TODO: Does this go around the freezing?
-                    new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
-                    // NoiseGeneratorSettings.bootstrap(noiseGenSettingsReg)
+                    settingReg.getOrThrow(settingsKey)
+                    // new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
+                    // NoiseGeneratorSettings.bootstrap(settingReg)
             );
             // add the weird Spigot config; it was complaining about this
             // TODO: There's no conf field

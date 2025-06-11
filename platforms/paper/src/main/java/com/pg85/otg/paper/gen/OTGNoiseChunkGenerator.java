@@ -193,7 +193,6 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         this.settings = settings;
         this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker((NoiseGeneratorSettings) settings.value()));
 
-
         this.presetFolderName = presetFolderName;
         this.worldSeed = seed;
         NoiseGeneratorSettings settings = generatorSettings.value();
