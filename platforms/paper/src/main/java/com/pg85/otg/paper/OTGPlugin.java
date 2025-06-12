@@ -192,7 +192,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             // add the weird Spigot config; it was complaining about this
             // TODO: There's no conf field
             // ????
-            OTGDelegate.conf = serverWorld.spigotConfig;
+            // OTGDelegate.conf = serverWorld.spigotConfig;
         } else {
             OTGDelegate = OTGGen.generator;
         }
