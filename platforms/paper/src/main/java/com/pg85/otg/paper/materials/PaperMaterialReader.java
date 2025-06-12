@@ -1,7 +1,7 @@
 package com.pg85.otg.paper.materials;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.StringReader;
 import com.pg85.otg.core.OTG;
 import com.pg85.otg.exceptions.InvalidConfigException;
 import com.pg85.otg.interfaces.IMaterialReader;
@@ -12,16 +12,18 @@ import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.materials.LocalMaterialData;
 import com.pg85.otg.util.materials.LocalMaterialTag;
 import com.pg85.otg.util.minecraft.BlockNames;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.core.RegistryAccess;
+
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 
