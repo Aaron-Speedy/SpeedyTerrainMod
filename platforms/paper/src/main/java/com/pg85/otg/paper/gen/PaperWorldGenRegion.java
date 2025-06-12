@@ -600,7 +600,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
 
         // Create and spawn entities according to group size
         for (int r = 0; r < entityData.getGroupSize(); r++) {
-            Entity entity = type.create(this.worldGenRegion.getMinecraftWorld());
+            Entity entity = type.create(this.worldGenRegion.getMinecraftWorld(), EntitySpawnReason.NATURAL);
             if (entity == null) {
                 if (this.logger.getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
                     this.logger.log(LogLevel.ERROR, LogCategory.CUSTOM_OBJECTS, "Failed to make basic entity for " + entityData.makeString());
