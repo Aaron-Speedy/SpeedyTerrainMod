@@ -7,23 +7,28 @@ import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.nbt.LocalNBTHelper;
 import com.pg85.otg.util.nbt.NamedBinaryTag;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.text.MessageFormat;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
+
 public class PaperNBTHelper extends LocalNBTHelper {
+    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
+
     @Override
     public NamedBinaryTag getNBTFromLocation(LocalWorldGenRegion world, int x, int y, int z) {
         BlockEntity tileEntity = ((PaperWorldGenRegion) world).getTileEntity(new BlockPos(x, y, z));
         if (tileEntity == null) {
             return null;
         }
-        CompoundTag nmsTag = new CompoundTag();
-        // Idk why but they changed .save() to .load() - Frank
-        tileEntity.load(nmsTag);
+        CompoundTag nmsTag = tileEntity.saveWithFullMetadata(registryAccess);
         nmsTag.remove("x");
         nmsTag.remove("y");
         nmsTag.remove("z");
