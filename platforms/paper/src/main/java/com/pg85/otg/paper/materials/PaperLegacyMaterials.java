@@ -119,7 +119,7 @@ public class PaperLegacyMaterials {
                 return Blocks.PURPUR_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.EAST);
             case "wooden_button":
             case "wood_button":
-                return Blocks.OAK_BUTTON.defaultBlockState().setValue(WoodButtonBlock.FACING, Direction.NORTH);
+                return Blocks.OAK_BUTTON.defaultBlockState().setValue(ButtonBlock.FACING, Direction.NORTH);
             case "waterlily":
                 return Blocks.LILY_PAD.defaultBlockState();
             case "quartz_ore":
@@ -1023,9 +1023,9 @@ public class PaperLegacyMaterials {
             case 0:
                 return Blocks.LEVER.defaultBlockState().setValue(LeverBlock.FACE, face).setValue(LeverBlock.FACING, getFacingLever(facing)).setValue(LeverBlock.POWERED, powered == 1);
             case 1:
-                return Blocks.STONE_BUTTON.defaultBlockState().setValue(StoneButtonBlock.FACE, face).setValue(StoneButtonBlock.FACING, getFacingButton(facing)).setValue(StoneButtonBlock.POWERED, powered == 1);
+                return Blocks.STONE_BUTTON.defaultBlockState().setValue(ButtonBlock.FACE, face).setValue(ButtonBlock.FACING, getFacingButton(facing)).setValue(ButtonBlock.POWERED, powered == 1);
             case 2:
-                return Blocks.OAK_BUTTON.defaultBlockState().setValue(WoodButtonBlock.FACE, face).setValue(WoodButtonBlock.FACING, getFacingButton(facing)).setValue(WoodButtonBlock.POWERED, powered == 1);
+                return Blocks.OAK_BUTTON.defaultBlockState().setValue(ButtonBlock.FACE, face).setValue(ButtonBlock.FACING, getFacingButton(facing)).setValue(ButtonBlock.POWERED, powered == 1);
             default:
                 return null;
         }
