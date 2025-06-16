@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -163,27 +164,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         if (PerfHelper.isYOutOfWorldBounds(y)) {
             return null;
         }
-
-        ChunkCoordinate chunkCoord = ChunkCoordinate.fromBlockCoords(x, z);
-
-        // If the chunk exists or is inside the area being decorated, fetch it normally.
-        ChunkAccess chunk = null;
-        // TOOD: Don't use this.decorationArea == null for worldgenregions
-        // doing things outside of population, split up worldgenregion
-        // into separate classes, one for decoration, one for non-decoration.
-        if (this.decorationArea == null || this.decorationArea.isInAreaBeingDecorated(x, z)) {
-            chunk = this.worldGenRegion.getChunk(chunkCoord.getChunkX(), chunkCoord.getChunkZ(), ChunkStatus.EMPTY, false);
-        }
-
-        // Tried to query an unloaded chunk outside the area being decorated
-        if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
-            return null;
-        }
-
-        // Get internal coordinates for block in chunk
-        int internalX = x & 0xF;
-        int internalZ = z & 0xF;
-        return PaperMaterialData.ofBlockData(chunk.getBlockState(internalX, y, internalZ));
+        return getMaterialDirect(x, y, z);
     }
 
     @Override
@@ -237,10 +218,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         // into separate classes, one for decoration, one for non-decoration.
         if (this.decorationArea == null || this.decorationArea.isInAreaBeingDecorated(x, z)) {
             chunk = this.worldGenRegion.getChunk(chunkCoord.getChunkX(), chunkCoord.getChunkZ(), ChunkStatus.EMPTY, false);
-        }
-
-        // Tried to query an unloaded chunk outside the area being decorated
-        if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS)) {
+        } else {
             return -1;
         }
 
@@ -413,8 +391,8 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
         if (tileEntity != null) {
             try {
                 // TODO: Check that this doesn't break anything
-                //tileEntity.load(state, nms);
-                tileEntity.load(nms);
+                // tileEntity.load(state, nms);
+                tileEntity.loadWithComponents(nms, registryAccess);
             } catch (JsonSyntaxException e) {
                 if (this.logger.getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
                     this.logger.log(
@@ -644,7 +622,8 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             if (entity instanceof Mob mobEntity) {
                 // Make sure Entity() mobs don't de-spawn, regardless of nbt data
                 mobEntity.setPersistenceRequired();
-                mobEntity.finalizeSpawn(this.worldGenRegion, this.worldGenRegion.getCurrentDifficultyAt(new BlockPos(entityData.getX(), entityData.getY(), entityData.getZ())), MobSpawnType.CHUNK_GENERATION, null, compoundTag);
+                mobEntity.readAdditionalSaveData(compoundTag);
+                mobEntity.finalizeSpawn(this.worldGenRegion, this.worldGenRegion.getCurrentDifficultyAt(new BlockPos((int) entityData.getX(), entityData.getY(), (int) entityData.getZ())), EntitySpawnReason.CHUNK_GENERATION, null);
             }
             this.worldGenRegion.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.DEFAULT);
         }
@@ -692,18 +671,17 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             return null;
         }
 
-        ChunkCoordinate chunkCoord = ChunkCoordinate.fromBlockCoords(x, z);
-
-        // If the chunk exists or is inside the area being decorated, fetch it normally.
+        ChunkPos pos = ChunkPos.minFromRegion(x, z);
         ChunkAccess chunk = null;
+
         // TOOD: Don't use this.decorationArea == null for worldgenregions
         // doing things outside of population, split up worldgenregion
         // into separate classes, one for decoration, one for non-decoration.
         if (this.decorationArea != null && this.decorationArea.isInAreaBeingDecorated(x, z)) {
-            chunk = this.worldGenRegion.getChunk(chunkCoord.getChunkX(), chunkCoord.getChunkZ(), ChunkStatus.EMPTY, false);
+            chunk = this.worldGenRegion.hasChunk(pos.x, pos.z) ? this.worldGenRegion.getChunk(pos.x, pos.z, ChunkStatus.CARVERS, false) : null;
         }
-        // isAtLeast() -> b()
-        if ((chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS))) {
+
+        if (chunk == null) {
             // Edited because RandomSource issue
             return this.chunkGenerator.getMaterialInUnloadedChunk(new RandomSourceWrapper.RandomWrapper(this.getWorldRandom()), x, y, z, this.worldGenRegion.getLevel());
         }
@@ -716,20 +694,19 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
 
     @Override
     public int getHighestBlockYAtWithoutLoading(int x, int z, boolean findSolid, boolean findLiquid, boolean ignoreLiquid, boolean ignoreSnow, boolean ignoreLeaves) {
-        ChunkCoordinate chunkCoord = ChunkCoordinate.fromBlockCoords(x, z);
-
-        // If the chunk exists or is inside the area being decorated, fetch it normally.
         ChunkAccess chunk = null;
+        ChunkPos pos = ChunkPos.minFromRegion(x, z);
+        // If the chunk exists or is inside the area being decorated, fetch it normally.
         // TOOD: Don't use this.decorationArea == null for worldgenregions
         // doing things outside of population, split up worldgenregion
         // into separate classes, one for decoration, one for non-decoration.
         if (this.decorationArea != null && this.decorationArea.isInAreaBeingDecorated(x, z)) {
-            chunk = this.worldGenRegion.getChunk(chunkCoord.getChunkX(), chunkCoord.getChunkZ(), ChunkStatus.EMPTY, false);
+            chunk = this.worldGenRegion.hasChunk(pos.x, pos.z) ? this.worldGenRegion.getChunk(pos.x, pos.z, ChunkStatus.CARVERS, false) : null;
         }
 
         // If the chunk doesn't exist and we're doing something outside the
         // decoration sequence, return the material without loading the chunk.
-        if ((chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.LIQUID_CARVERS))) {
+        if (chunk == null || !chunk.getPersistedStatus().isOrAfter(ChunkStatus.CARVERS)) {
             Random r = new RandomSourceWrapper.RandomWrapper(this.getWorldRandom());
             return this.chunkGenerator.getHighestBlockYInUnloadedChunk(r, x, z, findSolid, findLiquid, ignoreLiquid, ignoreSnow, this.worldGenRegion.getLevel());
         }
