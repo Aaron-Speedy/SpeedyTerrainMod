@@ -266,7 +266,7 @@ public class PaperMaterials extends LocalMaterials {
         YELLOW_FLOWER = PaperMaterialData.ofBlockData(Blocks.DANDELION.defaultBlockState());
         DEAD_BUSH = PaperMaterialData.ofBlockData(Blocks.DEAD_BUSH.defaultBlockState());
         FERN = PaperMaterialData.ofBlockData(Blocks.FERN.defaultBlockState());
-        LONG_GRASS = PaperMaterialData.ofBlockData(Blocks.GRASS.defaultBlockState());
+        LONG_GRASS = PaperMaterialData.ofBlockData(Blocks.TALL_GRASS.defaultBlockState());
 
         RED_MUSHROOM_BLOCK = PaperMaterialData.ofBlockData(Blocks.RED_MUSHROOM_BLOCK.defaultBlockState());
         BROWN_MUSHROOM_BLOCK = PaperMaterialData.ofBlockData(Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState());
