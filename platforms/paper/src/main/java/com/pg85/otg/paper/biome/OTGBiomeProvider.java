@@ -4,33 +4,40 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import com.pg85.otg.core.OTG;
 import com.pg85.otg.gen.biome.layers.BiomeLayers;
 import com.pg85.otg.gen.biome.layers.util.CachingLayerSampler;
+import com.pg85.otg.util.logging.*;
+
 import com.pg85.otg.interfaces.IBiome;
 import com.pg85.otg.interfaces.IBiomeConfig;
 import com.pg85.otg.interfaces.ILayerSource;
 import com.pg85.otg.paper.presets.PaperPresetLoader;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
+
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.CraftServer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
-
     public final String presetFolderName;
     private final long seed;
     private final boolean legacyBiomeInitLayer;
@@ -39,7 +46,9 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
     // private final HolderSet<Biome> biomes;
 
     private final ThreadLocal<CachingLayerSampler> layer;
-    // private final Int2ObjectMap<ResourceKey<Biome>> keyLookup;
+    private final Int2ObjectMap<Holder<Biome>> keyLookup;
+
+    private static final RegistryAccess registryAccess = ((CraftServer) Bukkit.getServer()).getServer().registryAccess();
 
     public static final MapCodec<OTGBiomeProvider> CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
@@ -61,7 +70,7 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
         this.legacyBiomeInitLayer = legacyBiomeInitLayer;
         this.largeBiomes = largeBiomes;
         this.layer = ThreadLocal.withInitial(() -> BiomeLayers.create(seed, ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getPresetGenerationData().get(presetFolderName), OTG.getEngine().getLogger()));
-        // this.keyLookup = new Int2ObjectOpenHashMap<>();
+        this.keyLookup = new Int2ObjectOpenHashMap<Holder<Biome>>();
 
         // Default to let us know if we did anything wrong
         // this.keyLookup.defaultReturnValue(Biomes.OCEAN);
@@ -79,28 +88,30 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
         // }
     }
 
-    // private static Stream<Holder<Biome>> getAllBiomesByPreset(String presetFolderName) {
-    //     List<ResourceKey<Biome>> biomesForPreset = ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getBiomeRegistryKeys(presetFolderName);
-    //     if (biomesForPreset == null) {
-    //         ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getBiomeRegistryKeys(OTG.getEngine().getPresetLoader().getDefaultPresetFolderName());
-    //     }
-    //     if (biomesForPreset == null) {
-    //         biomesForPreset = new ArrayList<>();
-    //     }
-    //     return biomesForPreset.stream().map(p -> Holder.direct(registry.getOrThrow(p)));
-    // }
-
-    // TODO: implement collectPossibleBiomes
+    @Override
+    protected Stream<Holder<Biome>> collectPossibleBiomes() {
+        var biomes = OTG.getEngine().getPresetLoader().getGlobalIdMapping(presetFolderName);
+        if (biomes == null) {
+            OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY,
+                    "Biome mapping for preset " + presetFolderName + " is null.");
+            return Stream.empty();
+        }
+        for (int id = 0; id < biomes.length; id++) {
+            keyLookup.put(id, ((PaperBiome) biomes[id]).getBiomeHolder());
+        }
+        return Stream.of(biomes).map(biome -> ((PaperBiome) biome).getBiomeHolder());
+    }
 
     protected MapCodec<? extends BiomeSource> codec() {
         return CODEC;
     }
 
     // TODO: This is only used by MC internally, OTG fetches all biomes via CachedBiomeProvider.
+    // Since it's useless, we're returning every biome as plains.
     // Could make this use the cache too?
     @Override
     public Holder<Biome> getNoiseBiome(int biomeX, int biomeY, int biomeZ, Climate.Sampler sampler) {
-        // return Holder.direct(registry.get(keyLookup.get(this.layer.get().sample(biomeX, biomeZ))));
+        return Holder.direct(registryAccess.lookupOrThrow(Registries.BIOME).getValue(Biomes.PLAINS));
     }
 
     @Override
@@ -109,9 +120,9 @@ public class OTGBiomeProvider extends BiomeSource implements ILayerSource {
     }
 
     // No longer used?
-	/*@Override
-	public BiomeSource withSeed(long seed)
-	{
-		return new OTGBiomeProvider(this.presetFolderName, seed, this.legacyBiomeInitLayer, this.largeBiomes, this.registry);
-	}*/
+    /*@Override
+    public BiomeSource withSeed(long seed)
+    {
+        return new OTGBiomeProvider(this.presetFolderName, seed, this.legacyBiomeInitLayer, this.largeBiomes, this.registry);
+    }*/
 }
