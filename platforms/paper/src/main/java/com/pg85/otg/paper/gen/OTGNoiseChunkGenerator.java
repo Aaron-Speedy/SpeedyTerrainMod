@@ -74,6 +74,7 @@ import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.NoiseChunk;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseRouter;
@@ -137,7 +138,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     public final OTGChunkGenerator internalGenerator;
     private final OTGChunkDecorator chunkDecorator;
     private final NoiseRouter router;
-    protected final WorldgenRandom random;
+    // protected final WorldgenRandom random;
 
     // private final Supplier<Aquifer.FluidPicker> globalFluidPicker;
 
@@ -176,10 +177,6 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         }
     }
 
-    public ICachedBiomeProvider getCachedBiomeProvider() {
-        return this.internalGenerator.getCachedBiomeProvider();
-    }
-
     public OTGNoiseChunkGenerator(BiomeSource source, long seed, Holder<NoiseGeneratorSettings> generatorSettings) {
         this("default", source, seed, generatorSettings);
     }
@@ -190,10 +187,6 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         this.presetFolderName = presetFolderName;
         this.preset = OTG.getEngine().getPresetLoader().getPresetByFolderName(presetFolderName);
 
-        this.settings = settings;
-        this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker((NoiseGeneratorSettings) settings.value()));
-
-        this.presetFolderName = presetFolderName;
         this.worldSeed = seed;
         NoiseGeneratorSettings settings = generatorSettings.value();
         this.generatorSettings = generatorSettings;
@@ -201,7 +194,9 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         this.defaultBlock = settings.defaultBlock();
         this.defaultFluid = settings.defaultFluid();
 
-        this.preset = OTG.getEngine().getPresetLoader().getPresetByFolderName(presetFolderName);
+        this.settings = Holder.direct(settings);
+        this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker(settings));
+
         this.shadowChunkGenerator = new ShadowChunkGenerator();
         this.internalGenerator = new OTGChunkGenerator(this.preset, seed, (ILayerSource) source, ((PaperPresetLoader) OTG.getEngine().getPresetLoader()).getGlobalIdMapping(presetFolderName), OTG.getEngine().getLogger());
         this.chunkDecorator = new OTGChunkDecorator();
@@ -209,8 +204,10 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         // Modified for 1.19
         this.router = settings.noiseRouter();
         this.sampler = new Sampler(this.router.temperature(), this.router.vegetation(), this.router.continents(), this.router.erosion(), this.router.depth(), this.router.ridges(), generatorSettings.value().spawnTarget());
+    }
 
-        this.globalFluidPicker = Suppliers.memoize(() -> createFluidPicker(settings));
+    public ICachedBiomeProvider getCachedBiomeProvider() {
+        return this.internalGenerator.getCachedBiomeProvider();
     }
 
     public void saveStructureCache() {
@@ -428,40 +425,39 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     // Carvers: Caves and ravines
     // TODO: Re-implement carvers, or find some way to get new (much more complex) vanilla cavegen to do the work for us
 
-    // NOTE: Commenting this out temporarily
-    // @Override
-    // public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk) {
-    //     BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> super.biomeSource.getNoiseBiome(x, y, z, noiseConfig.sampler()));
-    //     WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
-    //     int i = 8;
-    //     ChunkPos pos = chunk.getPos();
-    //     NoiseChunk noiseChunk = chunk.getOrCreateNoiseChunk((chunkAccess) -> this.createNoiseChunk(chunkAccess, structureAccess, Blender.of(chunkRegion), noiseConfig));
-    //     Aquifer aquifer = noiseChunk.aquifer();
-    //     OTGCarvingContext carvingContext = new OTGCarvingContext(this, structureAccess.level.registryAccess(), chunk.getHeightAccessorForGeneration(), noiseChunk, noiseConfig, generatorSettings.value().surfaceRule(), structureAccess.level.getMinecraftWorld());
-    //     CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask();
+    @Override
+    public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk) {
+        BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> super.biomeSource.getNoiseBiome(x, y, z, noiseConfig.sampler()));
+        WorldgenRandom worldgenRandom = new WorldgenRandom(new LegacyRandomSource(RandomSupport.generateUniqueSeed()));
+        int i = 8;
+        ChunkPos pos = chunk.getPos();
+        NoiseChunk noiseChunk = chunk.getOrCreateNoiseChunk((chunkAccess) -> this.createNoiseChunk(chunkAccess, structureAccess, Blender.of(chunkRegion), noiseConfig));
+        Aquifer aquifer = noiseChunk.aquifer();
+        OTGCarvingContext carvingContext = new OTGCarvingContext(this, structureAccess.level.registryAccess(), chunk.getHeightAccessorForGeneration(), noiseChunk, noiseConfig, generatorSettings.value().surfaceRule(), structureAccess.level.getMinecraftWorld());
+        CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask();
 
-    //     for(int i1 = -8; i1 <= 8; ++i1) {
-    //         for(int i2 = -8; i2 <= 8; ++i2) {
-    //             ChunkPos chunkPos = new ChunkPos(pos.x + i1, pos.z + i2);
-    //             ChunkAccess chunk1 = structureAccess.level.getChunk(chunkPos.x, chunkPos.z);
-    //             BiomeGenerationSettings biomeGenerationSettings = chunk1.carverBiome(() -> this.getBiomeGenerationSettings(super.biomeSource.getNoiseBiome(QuartPos.fromBlock(chunkPos.getMinBlockX()), 0, QuartPos.fromBlock(chunkPos.getMinBlockZ()), noiseConfig.sampler())));
-    //             Iterable<Holder<ConfiguredWorldCarver<?>>> carvers = biomeGenerationSettings.getCarvers();
-    //             int i3 = 0;
+        for (int i1 = -8; i1 <= 8; ++i1) {
+            for (int i2 = -8; i2 <= 8; ++i2) {
+                ChunkPos chunkPos = new ChunkPos(pos.x + i1, pos.z + i2);
+                ChunkAccess chunk1 = structureAccess.level.getChunk(chunkPos.x, chunkPos.z);
+                BiomeGenerationSettings biomeGenerationSettings = chunk1.carverBiome(() -> this.getBiomeGenerationSettings(super.biomeSource.getNoiseBiome(QuartPos.fromBlock(chunkPos.getMinBlockX()), 0, QuartPos.fromBlock(chunkPos.getMinBlockZ()), noiseConfig.sampler())));
+                Iterable<Holder<ConfiguredWorldCarver<?>>> carvers = biomeGenerationSettings.getCarvers();
+                int i3 = 0;
 
-    //             for(Holder<ConfiguredWorldCarver<?>> holder : carvers) {
-    //                 ConfiguredWorldCarver<?> configuredWorldCarver = (ConfiguredWorldCarver)holder.value();
-    //                 worldgenRandom.setLargeFeatureSeed(seed + (long)i3, chunkPos.x, chunkPos.z);
-    //                 if (configuredWorldCarver.isStartChunk(worldgenRandom)) {
-    //                     Objects.requireNonNull(biomeManager1);
-    //                     OTGWorldCarver worldCarver = new OTGWorldCarver();
-    //                     worldCarver.carve(carvingContext, chunk, biomeManager1::getBiome, worldgenRandom, aquifer, chunkPos, carvingMask);
-    //                 }
+                for (Holder<ConfiguredWorldCarver<?>> holder : carvers) {
+                    ConfiguredWorldCarver<?> configuredWorldCarver = (ConfiguredWorldCarver)holder.value();
+                    worldgenRandom.setLargeFeatureSeed(seed + (long)i3, chunkPos.x, chunkPos.z);
+                    if (configuredWorldCarver.isStartChunk(worldgenRandom)) {
+                        Objects.requireNonNull(biomeManager1);
+                        OTGWorldCarver worldCarver = new OTGWorldCarver();
+                        worldCarver.carve(carvingContext, chunk, biomeManager1::getBiome, worldgenRandom, aquifer, chunkPos, carvingMask);
+                    }
 
-    //                 ++i3;
-    //             }
-    //         }
-    //     }
-     // }
+                    ++i3;
+                }
+            }
+        }
+    }
 
     // TODO: conform buildNoise
     @Override
