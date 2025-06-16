@@ -10,9 +10,7 @@ import com.pg85.otg.config.standard.BiomeStandardValues;
 import com.pg85.otg.constants.Constants;
 import com.pg85.otg.core.config.biome.BiomeConfig;
 import com.pg85.otg.core.config.world.WorldConfig;
-import com.pg85.otg.interfaces.ILogger;
-import com.pg85.otg.interfaces.IMaterialReader;
-import com.pg85.otg.interfaces.IWorldConfig;
+import com.pg85.otg.interfaces.*;
 import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.minecraft.BiomeRegistryNames;
@@ -52,6 +50,8 @@ public abstract class LocalPresetLoader {
         }
         return materialReader;
     }
+
+    public abstract IBiome[] getGlobalIdMapping(String presetFolderName);
 
     // Creates a preset-specific materialreader, have to do this
     // only when loading each preset since each preset may have
