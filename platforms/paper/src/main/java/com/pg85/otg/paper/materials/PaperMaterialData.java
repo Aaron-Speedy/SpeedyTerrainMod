@@ -216,7 +216,7 @@ public final class PaperMaterialData extends LocalMaterialData {
             }
             if (state.hasProperty(RotatedPillarBlock.AXIS)) // All pillar blocks (logs, hay, chain(?), basalt, purpur, quartz)
             {
-                state = ((RotatedPillarBlock) state.getBlock()).rotate(this.blockData, Rotation.COUNTERCLOCKWISE_90);
+                state = RotatedPillarBlock.rotatePillar(this.blockData, Rotation.COUNTERCLOCKWISE_90);
             }
             if (state.hasProperty(CrossCollisionBlock.EAST)) // fence or glass pane
             {
