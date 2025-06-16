@@ -22,6 +22,7 @@ import com.pg85.otg.util.biome.OTGBiomeResourceLocation;
 import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.minecraft.EntityCategory;
+
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -34,6 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.NamespacedKey;
@@ -164,7 +166,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             // TODO: Verify that .register should be used instead of .registerOrOverride
             /* This line replaced the previous two lines because .register doesn't take another argument,
                and getting rid of that argument makes the two cases equal. I'm not sure if this affects anything. */
-            biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
+            var biomeHolder = biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
             // if (!refresh) {
             //     biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
             // } else {
@@ -199,7 +201,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
 //				});
 //			}
 
-            IBiome otgBiome = new PaperBiome(biome, biomeConfig.getValue());
+            IBiome otgBiome = new PaperBiome(biome, biomeConfig.getValue(), biomeHolder);
             if (otgBiomeId >= presetIdMapping.length) {
                 OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.CONFIGS, "Fatal error while registering OTG biome id's for preset " + preset.getFolderName() + ", most likely you've assigned a DefaultOceanBiome that doesn't exist.");
                 throw new RuntimeException("Fatal error while registering OTG biome id's for preset " + preset.getFolderName() + ", most likely you've assigned a DefaultOceanBiome that doesn't exist.");
@@ -360,6 +362,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
         return this.biomesByPresetFolderName.get(presetFolderName);
     }
 
+    @Override
     public IBiome[] getGlobalIdMapping(String presetFolderName) {
         return globalIdMapping.get(presetFolderName);
     }
