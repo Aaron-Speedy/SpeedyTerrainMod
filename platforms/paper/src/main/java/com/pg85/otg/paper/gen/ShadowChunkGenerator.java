@@ -168,7 +168,7 @@ public class ShadowChunkGenerator {
                 int endY = cachedChunk.getOrCreateHeightmapUnprimed(Types.WORLD_SURFACE_WG).getFirstAvailable(x, z);
                 for (int y = 0; y <= endY; y++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    chunk.setBlockState(pos, cachedChunk.getBlockState(pos), false);
+                    chunk.setBlockState(pos, cachedChunk.getBlockState(pos), 0);
                 }
             }
         }
@@ -198,7 +198,7 @@ public class ShadowChunkGenerator {
         int radiusInChunks = 5;
         ProtoChunk chunk;
         ChunkPos chunkpos;
-        if (serverWorld.getServer().getWorldData().worldGenSettings().generateStructures()) {
+        if (serverWorld.getServer().getWorldData().worldGenOptions().generateStructures()) {
             List<ChunkCoordinate> chunksToHandle = new ArrayList<>();
             ConcurrentMap<ChunkCoordinate, Integer> chunksHandled = new ConcurrentHashMap<>();
             if (noiseAffectingStructuresOnly) {
