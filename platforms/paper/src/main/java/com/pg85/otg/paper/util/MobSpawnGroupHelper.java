@@ -20,7 +20,7 @@ public class MobSpawnGroupHelper {
             // in 1.17, this is now "minecraft:entity.minecraft.chicken"
             // TODO: Make sure this works for all mobs.
             SpawnerData spawner = wSpawner.value();
-            WeightedMobSpawnGroup wMSG = new WeightedMobSpawnGroup(spawner.type().getDescriptionId().replace("entity.minecraft.", ""), wSpawner.weight().asInt(), spawner.minCount(), spawner.maxCount);
+            WeightedMobSpawnGroup wMSG = new WeightedMobSpawnGroup(spawner.type().getDescriptionId().replace("entity.minecraft.", ""), wSpawner.weight(), spawner.minCount(), spawner.maxCount());
             result.add(wMSG);
         }
         return result;
