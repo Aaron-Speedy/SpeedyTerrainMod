@@ -7,7 +7,7 @@ defaultTasks = arrayListOf("build", "publishToMavenLocal")
 allprojects {
     group = "com.pg85.otg"
     version = "1.21-0.0.50"
-    description = "Open Terrain Generator: Generate anything!"
+    description = "SpeedyTerrainMod"
 }
 
 subprojects {
@@ -21,7 +21,7 @@ subprojects {
 val universalJar = tasks.register<Jar>("universalJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory.set(layout.buildDirectory.dir("distributions"))
-    archiveFileName.set("OpenTerrainGenerator-Universal-" + project.version + ".jar")
+    archiveFileName.set("SpeedyTerrainMod-Universal-" + project.version + ".jar")
 }
 
 tasks.build {
