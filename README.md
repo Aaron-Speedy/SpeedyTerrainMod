@@ -8,7 +8,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Aaron-Speedy/SpeedyTerrainMod">
-    <img src="logo.png" alt="Logo" width="291" height="100">
+    <img src="STM-logo.png" alt="Logo" width="421" height="177">
   </a>
 
 <h3 align="center">SpeedyTerrainMod by Aaron Speedy</h3>
