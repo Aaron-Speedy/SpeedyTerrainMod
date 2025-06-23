@@ -33,19 +33,19 @@ SpeedyTerrainMod for MC 1.21.5 is under development, builds are now available un
 
 ### To-Do List
 Updating is difficult, so here's our current progress for 1.21.5
-[x] Paper platform
-  [x] Compiles
-  [ ] Runs
-[ ] Forge platform
-  [ ] Compiles
-  [ ] Runs
-[x] Common
-  [x] Error free
-  [x] Support pre-existing structures in presets
-  [x] Support 1.21.5 animals in presets (e.g. cold chicken, hot pig)
-  [x] Updated carvers for current cave system rather than pre-1.18
-  [ ] Support 1.21.5 structures in presets (e.g. falling leaves)
-  [ ] BO5 and new preset storage system (working BO5 implementation does exist in <a href="https://github.com/FrankTCA/LoraxCustomTrees">Lorax Custom Trees</a>)
+- [x] Paper platform
+  - [x] Compiles
+  - [ ] Runs
+- [ ] Forge platform
+  - [ ] Compiles
+  - [ ] Runs
+- [x] Common
+  - [x] Error free
+  - [x] Support pre-existing structures in presets
+  - [x] Support 1.21.5 animals in presets (e.g. cold chicken, hot pig)
+  - [x] Updated carvers for current cave system rather than pre-1.18
+  - [ ] Support 1.21.5 structures in presets (e.g. falling leaves)
+  - [ ] BO5 and new preset storage system (working BO5 implementation does exist in <a href="https://github.com/FrankTCA/LoraxCustomTrees">Lorax Custom Trees</a>)
 
 ## Credits
 
