@@ -260,7 +260,10 @@ public final class PaperMaterialTag extends LocalMaterialTag {
         if (BlockTags.MAINTAINS_FARMLAND.location().equals(loc)) return BlockTags.MAINTAINS_FARMLAND;
         if (BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS.location().equals(loc)) return BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS;
         if (BlockTags.DOES_NOT_BLOCK_HOPPERS.location().equals(loc)) return BlockTags.DOES_NOT_BLOCK_HOPPERS;
-        if (BlockTags.PLAYS_AMBIENT_DESERT_BLOCK_SOUNDS.location().equals(loc)) return BlockTags.PLAYS_AMBIENT_DESERT_BLOCK_SOUNDS;
+        if (BlockTags.TRIGGERS_AMBIENT_DESERT_DRY_VEGETATION_BLOCK_SOUNDS.location().equals(loc)) return BlockTags.TRIGGERS_AMBIENT_DESERT_DRY_VEGETATION_BLOCK_SOUNDS;
+        if (BlockTags.TRIGGERS_AMBIENT_DESERT_SAND_BLOCK_SOUNDS.location().equals(loc)) return BlockTags.TRIGGERS_AMBIENT_DESERT_SAND_BLOCK_SOUNDS;
+        if (BlockTags.TRIGGERS_AMBIENT_DRIED_GHAST_BLOCK_SOUNDS.location().equals(loc)) return BlockTags.TRIGGERS_AMBIENT_DRIED_GHAST_BLOCK_SOUNDS;
+        if (BlockTags.HAPPY_GHAST_AVOIDS.location().equals(loc)) return BlockTags.HAPPY_GHAST_AVOIDS;
         if (BlockTags.AIR.location().equals(loc)) return BlockTags.AIR;
 
         return null;
