@@ -53,7 +53,6 @@ We are always looking for people to contribute/collaborate with. We encourage co
 
 ### SpeedyTerrainMod Contributors
 * <a href="https://github.com/Aaron-Speedy">Aaron Speedy</a>
-* <a href="https://infotoast.org">Frank from Info Toast</a>
 
 SpeedyTerrainMod is based off <a href="https://github.com/FrankTCA/OpenTopG">FrankTCA's OpenTerrainGenerator fork</a> which is based off <a href="https://github.com/PG85/OpenTerrainGenerator">OpenTerrainGenerator</a>, developed by Team OTG:
 
