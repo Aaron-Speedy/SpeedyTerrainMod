@@ -32,6 +32,7 @@ import net.minecraft.data.worldgen.placement.TreePlacements;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.util.ProblemReporter.Collector;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -48,6 +49,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.WorldGenLevel;
 
 import org.bukkit.Bukkit;
@@ -392,7 +394,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             try {
                 // TODO: Check that this doesn't break anything
                 // tileEntity.load(state, nms);
-                tileEntity.loadWithComponents(nms, registryAccess);
+                tileEntity.loadWithComponents(TagValueInput.create(new Collector(), registryAccess, nms));
             } catch (JsonSyntaxException e) {
                 if (this.logger.getLogCategoryEnabled(LogCategory.CUSTOM_OBJECTS)) {
                     this.logger.log(
@@ -586,7 +588,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
                 return;
             }
             if (compoundTag != null) {
-                entity.load(compoundTag);
+                entity.load(TagValueInput.create(new Collector(), registryAccess, compoundTag));
             }
             entity.setRot(this.getWorldRandom().nextFloat() * 360.0F, 0.0F);
             entity.setPos(entityData.getX(), entityData.getY(), entityData.getZ());
@@ -622,7 +624,8 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
             if (entity instanceof Mob mobEntity) {
                 // Make sure Entity() mobs don't de-spawn, regardless of nbt data
                 mobEntity.setPersistenceRequired();
-                mobEntity.readAdditionalSaveData(compoundTag);
+                // mobEntity.readAdditionalSaveData(compoundTag);
+                mobEntity.readAdditionalSaveData(TagValueInput.create(new Collector(), registryAccess, compoundTag));
                 mobEntity.finalizeSpawn(this.worldGenRegion, this.worldGenRegion.getCurrentDifficultyAt(new BlockPos((int) entityData.getX(), entityData.getY(), (int) entityData.getZ())), EntitySpawnReason.CHUNK_GENERATION, null);
             }
             this.worldGenRegion.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.DEFAULT);
