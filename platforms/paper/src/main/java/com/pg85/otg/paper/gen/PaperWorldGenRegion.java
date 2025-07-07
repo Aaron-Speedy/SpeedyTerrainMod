@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -50,6 +51,7 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.WorldGenLevel;
 
 import org.bukkit.Bukkit;
@@ -72,6 +74,20 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
     // BO4 plotting may call hasDefaultStructures on chunks outside the area being decorated, in order to plot large structures.
     // It may query the same chunk multiple times, so use a fixed size cache.
     private final FifoMap<ChunkCoordinate, Boolean> cachedHasDefaultStructureChunks = new FifoMap<>(2048);
+
+    // For accessing protected methods
+    // Make sure there are no fields added
+
+    private static class MobAccess extends Mob {
+        public MobAccess(EntityType<? extends Mob> arg0, Level arg1) {
+            super(arg0, arg1);
+        }
+
+        @Override
+        public void readAdditionalSaveData(ValueInput arg0) {
+            super.readAdditionalSaveData(arg0);
+        }
+    }
 
     /**
      * Creates a LocalWorldGenRegion to be used during decoration for OTG worlds.
@@ -621,7 +637,7 @@ public class PaperWorldGenRegion extends LocalWorldGenRegion {
 
             // }
 
-            if (entity instanceof Mob mobEntity) {
+            if (entity instanceof MobAccess mobEntity) {
                 // Make sure Entity() mobs don't de-spawn, regardless of nbt data
                 mobEntity.setPersistenceRequired();
                 // mobEntity.readAdditionalSaveData(compoundTag);

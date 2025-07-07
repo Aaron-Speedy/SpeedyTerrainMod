@@ -158,7 +158,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     private final String presetFolderName;
     private final Preset preset;
 
-    // For accessing protected members
+    // For accessing protected methods
     // Make sure there are no fields added
 
     private static class OTGNoiseChunkAccess extends NoiseChunk {
