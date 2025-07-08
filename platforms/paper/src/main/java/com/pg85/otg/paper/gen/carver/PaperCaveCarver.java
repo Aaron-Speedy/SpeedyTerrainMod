@@ -1,5 +1,8 @@
 package com.pg85.otg.paper.gen.carver;
 
+import com.pg85.otg.paper.materials.PaperMaterialData;
+import com.pg85.otg.util.gen.carver.LocalCaveCarver;
+import com.pg85.otg.util.materials.LocalMaterialData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -17,21 +20,22 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Aquifer;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.carver.CarverConfiguration;
-import net.minecraft.world.level.levelgen.carver.CarvingContext;
 import net.minecraft.world.level.levelgen.carver.CaveCarverConfiguration;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.bukkit.Material;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public class OTGCaveCarver {
-    protected static final BlockState AIR;
-    protected static final BlockState CAVE_AIR;
-    protected static final FluidState WATER;
-    protected static final FluidState LAVA;
+public class PaperCaveCarver extends LocalCaveCarver {
+
+    public PaperCaveCarver() {
+        super(PaperMaterialData.ofSpigotMaterial(Material.AIR),
+                PaperMaterialData.ofSpigotMaterial(Material.CAVE_AIR),
+                PaperMaterialData.ofSpigotMaterial(Material.WATER),
+                PaperMaterialData.ofSpigotMaterial(Material.LAVA));
+    }
 
     public boolean carveCaves(OTGCarvingContext context, CaveCarverConfiguration config, ChunkAccess chunk, Function<BlockPos, Holder<Biome>> biomeAccessor, RandomSource random, Aquifer aquifer, ChunkPos chunkPos, CarvingMask carvingMask, FloatProvider floorLevel) {
         int blockPosCoord = SectionPos.sectionToBlockCoord(7);
@@ -188,7 +192,7 @@ public class OTGCaveCarver {
     @Nullable
     private BlockState getCarveState(OTGCarvingContext context, CaveCarverConfiguration config, BlockPos pos, Aquifer aquifer) {
         if (pos.getY() <= config.lavaLevel.resolveY(context)) {
-            return LAVA.createLegacyBlock();
+            return ((PaperMaterialData)LAVA).internalBlock();
         } else {
             BlockState blockState = aquifer.computeSubstance(new DensityFunction.SinglePointContext(pos.getX(), pos.getY(), pos.getZ()), (double)0.0F);
             if (blockState == null) {
@@ -256,12 +260,5 @@ public class OTGCaveCarver {
 
     private static boolean shouldSkip(double relative, double relativeY, double relativeZ, double minrelativeY) {
         return relativeY <= minrelativeY || relative * relative + relativeY * relativeY + relativeZ * relativeZ >= (double)1.0F;
-    }
-
-    static {
-        AIR = Blocks.AIR.defaultBlockState();
-        CAVE_AIR = Blocks.CAVE_AIR.defaultBlockState();
-        WATER = Fluids.WATER.defaultFluidState();
-        LAVA = Fluids.LAVA.defaultFluidState();
     }
 }

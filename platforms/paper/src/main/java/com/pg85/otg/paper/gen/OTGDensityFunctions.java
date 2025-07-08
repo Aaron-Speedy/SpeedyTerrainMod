@@ -29,6 +29,7 @@ import net.minecraft.util.ToFloatFunction;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.DensityFunction;
+import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.NoiseRouterData;
 import net.minecraft.world.level.levelgen.synth.BlendedNoise;
@@ -310,7 +311,13 @@ public final class OTGDensityFunctions {
         }
     }
 
-    protected static enum BeardifierMarker implements OTGDensityFunctions.BeardifierOrMarker {
+    /*
+     * I changed this to implement the vanilla BeardifierOrMarker because it's required NoiseChunk, a superclass
+     * of OTGNoiseChunkAccess, within OTGNoiseChunkGenerator. A better solution is recommended, and pay extra attention
+     * for runtime errors related to this.
+     * - Frank (1.21.7)
+     */
+    protected static enum BeardifierMarker implements DensityFunctions.BeardifierOrMarker {
         INSTANCE;
 
         public double compute(DensityFunction.FunctionContext context) {

@@ -10,10 +10,10 @@ import com.pg85.otg.customobject.structures.CustomStructureCache;
 import com.pg85.otg.interfaces.IBiome;
 import com.pg85.otg.interfaces.ICachedBiomeProvider;
 import com.pg85.otg.interfaces.ILayerSource;
-import com.pg85.otg.interfaces.IWorldConfig;
 import com.pg85.otg.paper.biome.PaperBiome;
 import com.pg85.otg.paper.gen.carver.OTGCarvingContext;
-import com.pg85.otg.paper.gen.carver.OTGWorldCarver;
+import com.pg85.otg.paper.gen.OTGDensityFunctions;
+import com.pg85.otg.paper.gen.carver.PaperWorldCarver;
 import com.pg85.otg.paper.presets.PaperPresetLoader;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.gen.ChunkBuffer;
@@ -25,12 +25,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -38,7 +35,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -69,18 +65,14 @@ import net.minecraft.world.level.levelgen.Aquifer;
 import net.minecraft.world.level.levelgen.Beardifier;
 import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import net.minecraft.world.level.levelgen.carver.CarvingContext;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.NoiseChunk;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseRouter;
 import net.minecraft.world.level.levelgen.NoiseSettings;
-import net.minecraft.world.level.levelgen.OTGDensityFunctions.BeardifierMarker;
-import net.minecraft.world.level.levelgen.OTGDensityFunctions.BeardifierOrMarker;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -102,19 +94,14 @@ import net.minecraft.world.level.WorldGenLevel;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.nio.file.Path;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.function.Supplier;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import javax.annotation.Nullable;
 
 public class OTGNoiseChunkGenerator extends ChunkGenerator {
@@ -373,7 +360,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
                 $$18,
                 $$19,
                 settings,
-                BeardifierMarker.INSTANCE,
+                OTGDensityFunctions.BeardifierMarker.INSTANCE,
                 (NoiseGeneratorSettings) this.settings.value(),
                 (Aquifer.FluidPicker) this.globalFluidPicker.get(),
                 Blender.empty()
@@ -449,7 +436,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
                     worldgenRandom.setLargeFeatureSeed(seed + (long)i3, chunkPos.x, chunkPos.z);
                     if (configuredWorldCarver.isStartChunk(worldgenRandom)) {
                         Objects.requireNonNull(biomeManager1);
-                        OTGWorldCarver worldCarver = new OTGWorldCarver();
+                        PaperWorldCarver worldCarver = new PaperWorldCarver();
                         worldCarver.carve(carvingContext, chunk, biomeManager1::getBiome, worldgenRandom, aquifer, chunkPos, carvingMask);
                     }
 
