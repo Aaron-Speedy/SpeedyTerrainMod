@@ -42,10 +42,10 @@ listOf(
         universalJar {
             val tree = zipTree(proj.the<OTGPlatformExtension>().productionJar)
             from(tree)
-            val manifestFile = tree.elements.map { files ->
-                files.find { it.asFile.path.endsWith("META-INF/MANIFEST.MF") }!!
-            }
-            manifest.from(manifestFile)
+            //val manifestFile = tree.elements.map { files ->
+            //    files.find { it.asFile.path.endsWith("META-INF/MANIFEST.MF") }!!
+            //}
+            //manifest.from(manifestFile)
         }
     }
 }

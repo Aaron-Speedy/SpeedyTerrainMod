@@ -3,7 +3,7 @@ import java.util.*
 
 plugins {
     id("base-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 // Create otgPlatform extension

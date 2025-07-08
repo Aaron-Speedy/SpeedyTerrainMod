@@ -46,5 +46,5 @@ tasks {
 
 otgPlatform {
     // I'm not sure if this is the proper way output without reobfuscating.
-    productionJar.set(tasks.named<Jar>("jar").flatMap { it.archiveFile })
+    productionJar.set(tasks.reobfJar.flatMap { it.outputJar })
 }
