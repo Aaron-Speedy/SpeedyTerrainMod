@@ -71,12 +71,12 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         plugin = this;
         Field frozen;
         try {
-            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
+            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
             // Make the frozen boolean accessible
             frozen.setAccessible(true);
             // Set the 'frozen' boolean to false for this registry
-            frozen.set(Registries.BIOME_SOURCE, false);
-            frozen.set(Registries.CHUNK_GENERATOR, false);
+            frozen.set(registryAccess.lookupOrThrow(Registries.BIOME_SOURCE), false);
+            frozen.set(registryAccess.lookupOrThrow(Registries.CHUNK_GENERATOR), false);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to unfreeze registry");
             e.printStackTrace();
@@ -89,8 +89,8 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         try {
             frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
             frozen.setAccessible(true);
-            frozen.set(Registries.BIOME_SOURCE, true);
-            frozen.set(Registries.CHUNK_GENERATOR, true);
+            frozen.set(registryAccess.lookupOrThrow(Registries.BIOME_SOURCE), true);
+            frozen.set(registryAccess.lookupOrThrow(Registries.CHUNK_GENERATOR), true);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.BIOME_REGISTRY, "Failed to re-freeze registry");
             e.printStackTrace();
