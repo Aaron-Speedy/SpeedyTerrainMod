@@ -166,7 +166,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             // TODO: Verify that .register should be used instead of .registerOrOverride
             /* This line replaced the previous two lines because .register doesn't take another argument,
                and getting rid of that argument makes the two cases equal. I'm not sure if this affects anything. */
-            var biomeHolder = biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
+            var biomeHolder = biomeRegistry.register(registryKey, biome, RegistrationInfo.BUILT_IN);
             // if (!refresh) {
             //     biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
             // } else {
