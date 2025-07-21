@@ -10,7 +10,7 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
-rootProject.name = "OpenTerrainGenerator"
+rootProject.name = "SpeedyTerrainMod"
 
 include(
     "common:common-util",

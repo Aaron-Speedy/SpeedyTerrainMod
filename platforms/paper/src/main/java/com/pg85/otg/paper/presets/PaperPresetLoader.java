@@ -1,5 +1,6 @@
 package com.pg85.otg.paper.presets;
 
+import com.mojang.serialization.Lifecycle;
 import com.pg85.otg.config.biome.BiomeConfigFinder;
 import com.pg85.otg.config.biome.BiomeGroup;
 import com.pg85.otg.constants.Constants;
@@ -166,7 +167,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             // TODO: Verify that .register should be used instead of .registerOrOverride
             /* This line replaced the previous two lines because .register doesn't take another argument,
                and getting rid of that argument makes the two cases equal. I'm not sure if this affects anything. */
-            var biomeHolder = biomeRegistry.register(registryKey, biome, RegistrationInfo.BUILT_IN);
+            var biomeHolder = biomeRegistry.register(registryKey, biome, new RegistrationInfo(Optional.empty(), Lifecycle.experimental()));
             // if (!refresh) {
             //     biomeRegistry.register(registryKey, biome, biomeRegistry.registrationInfo(registryKey).get());
             // } else {
