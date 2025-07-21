@@ -15,10 +15,13 @@ import com.pg85.otg.paper.gen.carver.OTGCarvingContext;
 import com.pg85.otg.paper.gen.OTGDensityFunctions;
 import com.pg85.otg.paper.gen.carver.PaperWorldCarver;
 import com.pg85.otg.paper.presets.PaperPresetLoader;
+import com.pg85.otg.paper.util.ObfuscationHelper;
 import com.pg85.otg.util.ChunkCoordinate;
 import com.pg85.otg.util.gen.ChunkBuffer;
 import com.pg85.otg.util.gen.DecorationArea;
 import com.pg85.otg.util.gen.JigsawStructureData;
+import com.pg85.otg.util.logging.LogCategory;
+import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.materials.LocalMaterialData;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -145,25 +148,6 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     private final String presetFolderName;
     private final Preset preset;
 
-    // For accessing protected methods
-    // Make sure there are no fields added
-
-    private static class OTGNoiseChunkAccess extends NoiseChunk {
-        public OTGNoiseChunkAccess(int horizontalCellCount, RandomState noiseConfig, int startBlockX, int startBlockZ, NoiseSettings generationShapeConfig, DensityFunctions.BeardifierOrMarker beardifying, NoiseGeneratorSettings chunkGeneratorSettings, Aquifer.FluidPicker fluidLevelSampler, Blender blender) {
-            super(horizontalCellCount, noiseConfig, startBlockX, startBlockZ, generationShapeConfig, beardifying, chunkGeneratorSettings, fluidLevelSampler, blender);
-        }
-
-        @Override
-        public Sampler cachedClimateSampler(NoiseRouter router, List<ParameterPoint> spawnTarget) {
-            return super.cachedClimateSampler(router, spawnTarget);
-        }
-
-        @Override
-        public BlockState getInterpolatedState() {
-            return super.getInterpolatedState();
-        }
-    }
-
     public OTGNoiseChunkGenerator(BiomeSource source, long seed, Holder<NoiseGeneratorSettings> generatorSettings) {
         this("default", source, seed, generatorSettings);
     }
@@ -281,7 +265,17 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
     private void doCreateBiomes(Blender blender, RandomState rand, StructureManager structureManager, ChunkAccess chunkAccess) {
         // Who cares about checks? Just make sure OTGNoiseChunkAccess has no new fields.
-        OTGNoiseChunkAccess chunk = (OTGNoiseChunkAccess) chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
+        NoiseChunk rawNoiseChunk = chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
+        PaperNoiseChunkAccess chunk = null;
+        try {
+            chunk = PaperNoiseChunkAccess.create(rawNoiseChunk, rand, this.settings.value().noiseSettings(), this.settings.value(), this.globalFluidPicker.get());
+        } catch (NoSuchFieldException e) {
+            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 1");
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 2");
+            throw new RuntimeException(e);
+        }
         BiomeResolver resolver = BelowZeroRetrogen.getBiomeResolver(blender.getBiomeResolver(this.biomeSource), chunkAccess);
         chunkAccess.fillBiomesFromNoise(resolver, chunk.cachedClimateSampler(rand.router(), ((NoiseGeneratorSettings) this.settings.value()).spawnTarget()));
     }
@@ -354,7 +348,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
             int $$19 = $$15 * $$13;
             double $$20 = (double) $$16 / (double) $$13;
             double $$21 = (double) $$17 / (double) $$13;
-            OTGNoiseChunkAccess $$22 = new OTGNoiseChunkAccess(
+            PaperNoiseChunkAccess $$22 = new PaperNoiseChunkAccess(
                 1,
                 noiseConfig,
                 $$18,
