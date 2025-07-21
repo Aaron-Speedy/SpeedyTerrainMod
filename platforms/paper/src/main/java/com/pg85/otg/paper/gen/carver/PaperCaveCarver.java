@@ -2,7 +2,6 @@ package com.pg85.otg.paper.gen.carver;
 
 import com.pg85.otg.paper.materials.PaperMaterialData;
 import com.pg85.otg.util.gen.carver.LocalCaveCarver;
-import com.pg85.otg.util.materials.LocalMaterialData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;

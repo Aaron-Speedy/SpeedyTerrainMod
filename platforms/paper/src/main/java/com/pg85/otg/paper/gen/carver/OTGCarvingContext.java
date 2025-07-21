@@ -11,7 +11,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.*;
-import net.minecraft.world.level.levelgen.carver.CarvingContext;
 
 import java.lang.reflect.Constructor;
 

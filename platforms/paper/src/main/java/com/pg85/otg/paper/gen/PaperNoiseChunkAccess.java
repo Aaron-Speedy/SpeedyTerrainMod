@@ -1,12 +1,10 @@
 package com.pg85.otg.paper.gen;
 
-import com.pg85.otg.paper.util.ObfuscationHelper;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class PaperNoiseChunkAccess extends NoiseChunk {

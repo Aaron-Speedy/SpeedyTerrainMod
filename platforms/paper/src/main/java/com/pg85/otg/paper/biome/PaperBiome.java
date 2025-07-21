@@ -2,7 +2,6 @@ package com.pg85.otg.paper.biome;
 
 import com.pg85.otg.config.ConfigFunction;
 import com.pg85.otg.config.standard.BiomeStandardValues;
-import com.pg85.otg.constants.Constants;
 import com.pg85.otg.core.OTG;
 import com.pg85.otg.core.config.biome.BiomeConfig;
 import com.pg85.otg.gen.resource.GlowLichenResource;
@@ -18,14 +17,12 @@ import com.pg85.otg.util.logging.LogLevel;
 import com.pg85.otg.util.materials.LocalMaterialBase;
 import com.pg85.otg.util.minecraft.EntityCategory;
 import com.pg85.otg.util.minecraft.LegacyRegistry;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
@@ -43,7 +40,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PaperBiome implements IBiome {
     private final Biome biomeBase;

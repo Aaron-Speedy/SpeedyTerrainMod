@@ -12,7 +12,6 @@ import com.pg85.otg.interfaces.ICachedBiomeProvider;
 import com.pg85.otg.interfaces.ILayerSource;
 import com.pg85.otg.paper.biome.PaperBiome;
 import com.pg85.otg.paper.gen.carver.OTGCarvingContext;
-import com.pg85.otg.paper.gen.OTGDensityFunctions;
 import com.pg85.otg.paper.gen.carver.PaperWorldCarver;
 import com.pg85.otg.paper.presets.PaperPresetLoader;
 import com.pg85.otg.paper.util.ObfuscationHelper;
@@ -46,7 +45,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.*;
-import net.minecraft.world.level.biome.Climate.ParameterPoint;
 import net.minecraft.world.level.biome.Climate.Sampler;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,7 +63,6 @@ import net.minecraft.world.level.levelgen.Beardifier;
 import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
-import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.NoiseChunk;
@@ -262,17 +259,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     }
 
     private void doCreateBiomes(Blender blender, RandomState rand, StructureManager structureManager, ChunkAccess chunkAccess) {
-        // Who cares about checks? Just make sure OTGNoiseChunkAccess has no new fields.
         NoiseChunk chunk = chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
-        /*try {
-            chunk = PaperNoiseChunkAccess.create(rawNoiseChunk, rand, this.settings.value().noiseSettings(), this.settings.value(), this.globalFluidPicker.get());
-        } catch (NoSuchFieldException e) {
-            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 1");
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 2");
-            throw new RuntimeException(e);
-        }*/
         BiomeResolver resolver = BelowZeroRetrogen.getBiomeResolver(blender.getBiomeResolver(this.biomeSource), chunkAccess);
         try {
             Method ccsMethod = NoiseChunk.class.getDeclaredMethod(ObfuscationHelper.isDev() ? "cachedClimateSampler" : "a", NoiseRouter.class, List.class);

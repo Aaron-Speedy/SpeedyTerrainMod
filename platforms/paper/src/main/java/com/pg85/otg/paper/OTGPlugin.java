@@ -12,16 +12,13 @@ import com.pg85.otg.paper.util.ObfuscationHelper;
 import com.pg85.otg.util.logging.LogCategory;
 import com.pg85.otg.util.logging.LogLevel;
 import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.status.WorldGenContext;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import org.bukkit.Bukkit;
@@ -36,10 +33,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -65,8 +60,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Experimental test to stop crash on server stop for spigot
-        // OTG.stopEngine();
+
     }
 
     @Override
