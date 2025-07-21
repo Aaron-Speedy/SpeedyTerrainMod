@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.status.WorldGenContext;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
@@ -35,8 +36,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -171,23 +174,27 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         if (OTGGen.generator == null) {
             Field frozen;
             Registry<NoiseGeneratorSettings> settingReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
-            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "noise_settings"));
+            // We do not actually take advantage of the vanilla noise settings/system so this will be set to default
+            // - Frank
+            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(Constants.MINECRAFT_NAMESPACE, "overworld"));
 
             try {
-                frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
+                frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
                 frozen.setAccessible(true);
                 frozen.set(settingReg, false);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+            // Make sure the registry actually contains the key for noise settings.
+            // - Frank
+            if (!settingReg.containsKey(settingsKey)) {
+                OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.MAIN, "Noise settings are not registered for world " + world.getName());
+            }
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
                     new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false),
                     world.getSeed(),
-                    // TODO: Does this go around the freezing?
                     settingReg.getOrThrow(settingsKey)
-                    // new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
-                    // NoiseGeneratorSettings.bootstrap(settingReg)
             );
             // add the weird Spigot config; it was complaining about this
             // TODO: There's no conf field
@@ -198,16 +205,15 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         }
 
         try {
-            // Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "t");
-            Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "u");
-            finalGenerator.setAccessible(true);
+            Field finalGeneratorContext = ObfuscationHelper.getField(ChunkMap.class, "worldGenContext", "S");
+            finalGeneratorContext.setAccessible(true);
 
-            finalGenerator.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);
+            // Set the WorldGenContext because now they're using a record called WorldGenContext and that contains the generator
+            // - Frank
+            WorldGenContext theirWgc = (WorldGenContext) finalGeneratorContext.get(serverWorld.getChunkSource().chunkMap);
+            WorldGenContext ourWgc = new WorldGenContext(theirWgc.level(), OTGDelegate, theirWgc.structureManager(), theirWgc.lightEngine(), theirWgc.mainThreadExecutor(), theirWgc.unsavedListener());
 
-            /*Field pcmGen = ObfuscationHelper.getField(ChunkMap.class, "generator", "r");
-            pcmGen.setAccessible(true);
-
-            pcmGen.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);*/
+            finalGeneratorContext.set(serverWorld.getChunkSource().chunkMap, ourWgc);
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }

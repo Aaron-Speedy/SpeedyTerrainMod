@@ -410,8 +410,6 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
     // }
 
     // Carvers: Caves and ravines
-    // TODO: Re-implement carvers, or find some way to get new (much more complex) vanilla cavegen to do the work for us
-
     @Override
     public void applyCarvers(WorldGenRegion chunkRegion, long seed, RandomState noiseConfig, BiomeManager biomeManager, StructureManager structureAccess, ChunkAccess chunk) {
         BiomeManager biomeManager1 = biomeManager.withDifferentSource((x, y, z) -> super.biomeSource.getNoiseBiome(x, y, z, noiseConfig.sampler()));

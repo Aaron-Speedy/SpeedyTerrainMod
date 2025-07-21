@@ -107,6 +107,8 @@ public class Constants {
     public static final String MOD_BIOME_DICT_TAG_LABEL = "modtag.";
     public static final String MC_BIOME_DICT_TAG_LABEL = "mctag.";
 
+    public static final String MINECRAFT_NAMESPACE = "minecraft";
+
     public static final String LABEL_EXCLUDE = "-";
     public static final String MOD_LABEL_EXCLUDE = LABEL_EXCLUDE + MOD_LABEL;
     public static final String BIOME_CATEGORY_LABEL_EXCLUDE = LABEL_EXCLUDE + BIOME_CATEGORY_LABEL;
