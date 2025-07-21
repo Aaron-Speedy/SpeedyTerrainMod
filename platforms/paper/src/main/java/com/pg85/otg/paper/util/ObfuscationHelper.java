@@ -1,6 +1,7 @@
 package com.pg85.otg.paper.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public final class ObfuscationHelper {
     private static final boolean IS_DEV;
@@ -15,6 +16,10 @@ public final class ObfuscationHelper {
         }
 
         IS_DEV = dev;
+    }
+
+    public static boolean isDev() {
+        return IS_DEV;
     }
 
     public static Field getField(Class<?> clazz, String devName, String obfName) throws NoSuchFieldException {

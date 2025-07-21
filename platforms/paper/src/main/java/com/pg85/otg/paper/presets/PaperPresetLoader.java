@@ -77,7 +77,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
 
         Field frozen;
         try {
-            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
+            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
             // Make the frozen boolean accessible
             frozen.setAccessible(true);
             // Set the 'frozen' boolean to false for this registry
@@ -91,8 +91,10 @@ public class PaperPresetLoader extends LocalPresetLoader {
             registerBiomesForPreset(false, preset, biomeRegistry);
         }
 
+        System.out.println(registryAccess.lookupOrThrow(BIOME_KEY));
+
         try {
-            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
+            frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
             // Set the 'frozen' boolean to true for this registry
             frozen.setAccessible(true);
             frozen.set(biomeRegistry, true);
@@ -280,7 +282,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             // Initialize biome group data
             NewBiomeGroup bg = new NewBiomeGroup();
             bg.id = group.getGroupId();
-            bg.rarity = group.getGroupRarity();
+            bg.rarity = group.getGroupRarity();OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you recieve this error. 2");
 
             // init to genDepth as it will have one value per depth
             bg.totalDepthRarity = new int[genDepth + 1];

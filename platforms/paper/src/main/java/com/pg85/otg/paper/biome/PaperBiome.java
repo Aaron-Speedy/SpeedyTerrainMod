@@ -42,10 +42,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PaperBiome implements IBiome {
@@ -126,7 +123,7 @@ public class PaperBiome implements IBiome {
                 for (LocalMaterialBase base : glow.canBePlacedOn) {
                     if (base instanceof PaperMaterialTag tag) {
                         if (tag.getTag() == null) {
-                            list.addAll(Arrays.stream(tag.getOtgBlockTag()).map(Block::defaultBlockState).collect(Collectors.toList()));
+                            list.addAll(Arrays.stream(Objects.requireNonNull(tag.getOtgBlockTag())).map(Block::defaultBlockState).toList());
                         } else {
                             // Cannot find an easy way of getting a list of blocks from a tag :/
                             OTG.getEngine().getLogger().log(LogLevel.ERROR, LogCategory.CONFIGS, "Vanilla tags are currently unsuported for GlowLichen");

@@ -45,11 +45,7 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
-import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.BiomeResolver;
-import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.biome.Climate.ParameterPoint;
 import net.minecraft.world.level.biome.Climate.Sampler;
 import net.minecraft.world.level.block.Blocks;
@@ -96,6 +92,8 @@ import net.minecraft.world.level.WorldGenLevel;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -265,9 +263,8 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
 
     private void doCreateBiomes(Blender blender, RandomState rand, StructureManager structureManager, ChunkAccess chunkAccess) {
         // Who cares about checks? Just make sure OTGNoiseChunkAccess has no new fields.
-        NoiseChunk rawNoiseChunk = chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
-        PaperNoiseChunkAccess chunk = null;
-        try {
+        NoiseChunk chunk = chunkAccess.getOrCreateNoiseChunk(x -> this.createNoiseChunk(x, structureManager, blender, rand));
+        /*try {
             chunk = PaperNoiseChunkAccess.create(rawNoiseChunk, rand, this.settings.value().noiseSettings(), this.settings.value(), this.globalFluidPicker.get());
         } catch (NoSuchFieldException e) {
             OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 1");
@@ -275,9 +272,23 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
         } catch (IllegalAccessException e) {
             OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 2");
             throw new RuntimeException(e);
-        }
+        }*/
         BiomeResolver resolver = BelowZeroRetrogen.getBiomeResolver(blender.getBiomeResolver(this.biomeSource), chunkAccess);
-        chunkAccess.fillBiomesFromNoise(resolver, chunk.cachedClimateSampler(rand.router(), ((NoiseGeneratorSettings) this.settings.value()).spawnTarget()));
+        try {
+            Method ccsMethod = NoiseChunk.class.getDeclaredMethod(ObfuscationHelper.isDev() ? "cachedClimateSampler" : "a", NoiseRouter.class, List.class);
+            ccsMethod.setAccessible(true);
+            Climate.Sampler cachedClimateSampler = (Climate.Sampler) ccsMethod.invoke(chunk, rand.router(), this.settings.value().spawnTarget());
+            chunkAccess.fillBiomesFromNoise(resolver, cachedClimateSampler);
+        } catch (NoSuchMethodException e) {
+            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 3");
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 4");
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you receive this error. 5");
+            throw new RuntimeException(e);
+        }
     }
 
     private NoiseChunk createNoiseChunk(ChunkAccess chunkAccess, StructureManager structureManager, Blender blender, RandomState rand) {
@@ -645,6 +656,7 @@ public class OTGNoiseChunkGenerator extends ChunkGenerator {
                     levelchunksection.getBiomes().getAll((b) -> set.add(b.value()));
                 }
             });
+            System.out.println(this.biomeSource.possibleBiomes());
             set.retainAll(this.biomeSource.possibleBiomes().stream().map(Holder::value).collect(Collectors.toSet()));
         }
     }
