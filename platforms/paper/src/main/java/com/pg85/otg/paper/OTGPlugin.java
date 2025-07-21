@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.status.WorldGenContext;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
@@ -38,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -193,8 +195,6 @@ public class OTGPlugin extends JavaPlugin implements Listener {
                     new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false),
                     world.getSeed(),
                     settingReg.getOrThrow(settingsKey)
-                    //new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
-                    // NoiseGeneratorSettings.bootstrap(settingReg)
             );
             // add the weird Spigot config; it was complaining about this
             // TODO: There's no conf field
@@ -205,15 +205,15 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         }
 
         try {
-            Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "u");
-            finalGenerator.setAccessible(true);
+            Field finalGeneratorContext = ObfuscationHelper.getField(ChunkMap.class, "worldGenContext", "S");
+            finalGeneratorContext.setAccessible(true);
 
-            finalGenerator.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);
+            // Set the WorldGenContext because now they're using a record called WorldGenContext and that contains the generator
+            // - Frank
+            WorldGenContext theirWgc = (WorldGenContext) finalGeneratorContext.get(serverWorld.getChunkSource().chunkMap);
+            WorldGenContext ourWgc = new WorldGenContext(theirWgc.level(), OTGDelegate, theirWgc.structureManager(), theirWgc.lightEngine(), theirWgc.mainThreadExecutor(), theirWgc.unsavedListener());
 
-            /*Field pcmGen = ObfuscationHelper.getField(ChunkMap.class, "generator", "r");
-            pcmGen.setAccessible(true);
-
-            pcmGen.set(serverWorld.getChunkSource().chunkMap, OTGDelegate);*/
+            finalGeneratorContext.set(serverWorld.getChunkSource().chunkMap, ourWgc);
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }
