@@ -43,7 +43,7 @@ public class OTGCarvingContext extends WorldGenerationContext {
         try {
             Constructor contextConstructor = SurfaceRules.Context.class.getDeclaredConstructors()[0];
             contextConstructor.setAccessible(true);
-            SurfaceRules.Context context1 = (SurfaceRules.Context) contextConstructor.newInstance(this, context.randomState(), chunk, noiseChunk, biomeGetter, this.registryAccess().lookupOrThrow(Registries.BIOME), context);
+            SurfaceRules.Context context1 = (SurfaceRules.Context) contextConstructor.newInstance(this.randomState.surfaceSystem(), context.randomState(), chunk, noiseChunk, biomeGetter, this.registryAccess().lookupOrThrow(Registries.BIOME), context);
             SurfaceRules.SurfaceRule surfaceRule = (SurfaceRules.SurfaceRule) rule.apply(context1);
             int x = pos.getX();
             int y = pos.getY();
