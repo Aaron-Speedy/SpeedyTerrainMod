@@ -174,7 +174,7 @@ public class OTGPlugin extends JavaPlugin implements Listener {
             Registry<NoiseGeneratorSettings> settingReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
             // We do not actually take advantage of the vanilla noise settings/system so this will be set to default
             // - Frank
-            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.withDefaultNamespace("overworld"));
+            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(Constants.MINECRAFT_NAMESPACE, "overworld"));
 
             try {
                 frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
