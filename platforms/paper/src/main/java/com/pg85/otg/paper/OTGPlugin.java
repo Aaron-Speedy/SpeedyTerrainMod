@@ -35,6 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -171,22 +172,28 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         if (OTGGen.generator == null) {
             Field frozen;
             Registry<NoiseGeneratorSettings> settingReg = registryAccess.lookupOrThrow(Registries.NOISE_SETTINGS);
-            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID_SHORT, "noise_settings"));
+            // We do not actually take advantage of the vanilla noise settings/system so this will be set to default
+            // - Frank
+            ResourceKey<NoiseGeneratorSettings> settingsKey = ResourceKey.create(Registries.NOISE_SETTINGS, ResourceLocation.withDefaultNamespace("overworld"));
 
             try {
-                frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "ca");
+                frozen = ObfuscationHelper.getField(MappedRegistry.class, "frozen", "l");
                 frozen.setAccessible(true);
                 frozen.set(settingReg, false);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
+            // Make sure the registry actually contains the key for noise settings.
+            // - Frank
+            if (!settingReg.containsKey(settingsKey)) {
+                OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.MAIN, "Noise settings are not registered for world " + world.getName());
+            }
             OTGDelegate = new OTGNoiseChunkGenerator(
                     OTGGen.getPreset().getFolderName(),
                     new OTGBiomeProvider(OTGGen.getPreset().getFolderName(), world.getSeed(), false, false),
                     world.getSeed(),
-                    // TODO: Does this go around the freezing?
                     settingReg.getOrThrow(settingsKey)
-                    // new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
+                    //new RegistrySetBuilder().add(Registries.NOISE_SETTINGS, NoiseGeneratorSettings::bootstrap)
                     // NoiseGeneratorSettings.bootstrap(settingReg)
             );
             // add the weird Spigot config; it was complaining about this
@@ -198,7 +205,6 @@ public class OTGPlugin extends JavaPlugin implements Listener {
         }
 
         try {
-            // Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "t");
             Field finalGenerator = ObfuscationHelper.getField(ChunkMap.class, "generator", "u");
             finalGenerator.setAccessible(true);
 
