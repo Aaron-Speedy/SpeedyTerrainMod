@@ -22,13 +22,12 @@ repositories {
 // }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.7-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
     implementation(project(":common:common-core"))
-    // TODO: Update when WorldEdit is available for 1.21.7
-    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.11") {
+    // TODO: Change this from snapshot when 7.3.16 stable
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.16-SNAPSHOT") {
         exclude("org.yaml")
     }
-    // compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.11")
 }
 
 tasks {
