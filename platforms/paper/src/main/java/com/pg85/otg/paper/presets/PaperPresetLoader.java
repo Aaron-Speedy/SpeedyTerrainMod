@@ -282,7 +282,7 @@ public class PaperPresetLoader extends LocalPresetLoader {
             // Initialize biome group data
             NewBiomeGroup bg = new NewBiomeGroup();
             bg.id = group.getGroupId();
-            bg.rarity = group.getGroupRarity();OTG.getEngine().getLogger().log(LogLevel.FATAL, LogCategory.BIOME_REGISTRY, "We could not convert the vanilla chunk system into our own. Please contact us on our GitHub issue page if you recieve this error. 2");
+            bg.rarity = group.getGroupRarity();
 
             // init to genDepth as it will have one value per depth
             bg.totalDepthRarity = new int[genDepth + 1];
