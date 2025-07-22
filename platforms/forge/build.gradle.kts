@@ -1,10 +1,10 @@
 plugins {
     id("platform-conventions")
-    id("dev.architectury.loom") version "0.10.0-SNAPSHOT"
+    id("dev.architectury.loom") version "1.9-SNAPSHOT"
 }
 
-val mcVersion = "1.19"
-val forgeVersion = "41.0.38"
+val mcVersion = "1.21.8"
+val forgeVersion = "58.0.0"
 
 loom {
     silentMojangMappingsLicense()
@@ -43,11 +43,13 @@ dependencies {
 
     otg(project(":common:common-core"))
 
-    val worldeditVersion = "7.2.8-SNAPSHOT"
+
+    val worldeditVersion = "7.3.16-SNAPSHOT"
     compileOnly("com.sk89q.worldedit:worldedit-core:$worldeditVersion") {
         exclude("org.yaml")
     }
-    modCompileOnly("com.sk89q.worldedit:worldedit-forge-mc$mcVersion:$worldeditVersion")
+    // Does worldedit support forge much anymore? Latest is 7.3.0
+    //modCompileOnly("com.sk89q.worldedit:worldedit-forge-mc$mcVersion:$worldeditVersion")
 }
 
 tasks {
