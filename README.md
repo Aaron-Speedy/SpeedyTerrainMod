@@ -21,7 +21,7 @@
     <br />
     <a href="https://www.openterraingenerator.org/presets.html">See Our Presets</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bugs</a>
+    <a href="https://github.com/Aaron-Speedy/SpeedyTerrainMod/issues">Report Bugs</a>
     ·
     <a href="https://discord.gg/YY2NECCBYN">Join our Discord</a>
   </p>
